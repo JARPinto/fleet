@@ -1,3 +1,4 @@
+from crypt import methods
 import sqlite3
 from flask import Flask, render_template, request, url_for, flash, redirect, session
 from flask_session import Session
@@ -70,3 +71,41 @@ def register():
 
     return render_template("register.html")
         
+@app.route ("/login", methods=["POST", "GET"])
+def login():
+    """Log user in"""
+
+    # Forget any username
+    session.clear()
+
+
+    # if form is submite
+    if request.method == "POST":
+        name = request.form.get("username")
+        pwd = request.form.get("password")
+        print(name)
+        print(pwd)
+        # Check variables
+        if not name:
+            flash('Username is required!')
+        elif not pwd:
+            flash('Password is required!')
+        
+        # Query database for username
+        db = get_db_connection()
+        cursor = db.cursor()
+        rows = cursor.execute("SELECT * FROM users")
+
+        for row in rows:
+            print(row["username"])
+        
+        session["username"] = request.form.get("username")
+            
+        return redirect("/")
+    return render_template("login.html")
+
+@app.route('/logout', methods=["GET", "POST"])
+def logout():
+    session["name"] = None
+    #return redirect("/")
+    return render_template("/logout.html")
