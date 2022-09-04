@@ -47,13 +47,26 @@ def register():
             # Hash password and save to db.
             pwd_hash = generate_password_hash(pwd, method='pbkdf2:sha256', salt_length=8)
 
+            try:
+                db = get_db_connection()
+                cursor = db.cursor()
+                print("Successfully Connected to SQL")
 
-            db = get_db_connection()
-            db.execute('INSERT INTO users (username, hash) VALUES (?, ?)',
-                        (name, pwd_hash))
-            db.commit()
-            db.close()
-            return redirect(url_for('index'))
+                cursor.execute('INSERT INTO users (username, hash) VALUES (?, ?)',
+                            (name, pwd_hash))
+                
+                db.commit()
+                print("Record inserted successfully", cursor.rowcount)
+                cursor.close()
+                return redirect(url_for('index'))
+            
+            except sqlite3.Error as error:
+                print("Failed to insert data", error)
+
+            finally:
+                if db:
+                    db.close()
+                    print("The db connection is closed")
 
     return render_template("register.html")
         
