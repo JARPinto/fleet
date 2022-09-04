@@ -48,27 +48,31 @@ def register():
             # Hash password and save to db.
             pwd_hash = generate_password_hash(pwd, method='pbkdf2:sha256', salt_length=8)
 
-            try:
-                db = get_db_connection()
-                cursor = db.cursor()
-                print("Successfully Connected to SQL")
-
-                cursor.execute('INSERT INTO users (username, hash) VALUES (?, ?)',
-                            (name, pwd_hash))
-                
-                db.commit()
-                print("Record inserted successfully", cursor.rowcount)
-                cursor.close()
-                return redirect(url_for('index'))
+            db = get_db_connection()
+            cursor = db.cursor()
+            print("Successfully Connected to SQL")
             
-            except sqlite3.Error as error:
-                print("Failed to insert data", error)
-
-            finally:
-                if db:
-                    db.close()
-                    print("The db connection is closed")
-
+            cursor.execute("SELECT * FROM users WHERE username = ?", (name,))
+            rows = cursor.fetchall()            
+            
+            if len(rows) == 0:
+                try:
+                    cursor.execute('INSERT INTO users (username, hash) VALUES (?, ?)',
+                            (name, pwd_hash))
+                    db.commit()
+                    print("Record inserted successfully", cursor.rowcount)
+                    cursor.close()
+                    session["username"] = name
+                except sqlite3.Error as error:
+                    print("Failed to insert data", error)
+                finally:
+                    if db:
+                        db.close()
+                        print("The db connection is closed")
+                return redirect(url_for('index'))
+            else:
+                flash("Username already exists")
+                
     return render_template("register.html")
         
 @app.route ("/login", methods=["POST", "GET"])
@@ -96,6 +100,9 @@ def login():
             rows = cursor.fetchall()
             print("Database reading done")
             print(len(rows))
+            cursor.close()
+            if db:
+                db.close()
 
             # Ensures username and password is correct
             if len(rows) != 1 or not check_password_hash(rows[0]["hash"], pwd):
