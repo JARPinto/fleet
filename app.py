@@ -74,34 +74,41 @@ def register():
 @app.route ("/login", methods=["POST", "GET"])
 def login():
     """Log user in"""
-
     # Forget any username
     session.clear()
-
 
     # if form is submite
     if request.method == "POST":
         name = request.form.get("username")
         pwd = request.form.get("password")
-        print(name)
-        print(pwd)
+        print("Login c/: " + name)
+        print("Pass login: " + pwd)
         # Check variables
         if not name:
             flash('Username is required!')
         elif not pwd:
             flash('Password is required!')
-        
-        # Query database for username
-        db = get_db_connection()
-        cursor = db.cursor()
-        rows = cursor.execute("SELECT * FROM users")
+        else:
+            # Query database for username
+            db = get_db_connection()
+            cursor = db.cursor()
+            cursor.execute("SELECT * FROM users WHERE username = ?", (name,))
+            rows = cursor.fetchall()
+            print("Database reading done")
+            print(len(rows))
 
-        for row in rows:
-            print(row["username"])
-        
-        session["username"] = request.form.get("username")
-            
-        return redirect("/")
+            # Ensures username and password is correct
+            if len(rows) != 1 or not check_password_hash(rows[0]["hash"], pwd):
+                flash("Invalid username and/or password")
+
+            else:
+                # Remember username exists and password is correct
+                session["username"] = rows[0]["username"]
+                print("username and password correct")
+                print(rows[0]["username"])
+                
+                # Redirect user to home page 
+                return redirect("/")
     return render_template("login.html")
 
 @app.route('/logout', methods=["GET", "POST"])

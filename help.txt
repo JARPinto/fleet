@@ -4,3 +4,5 @@ export FLASK_ENV=development
 https://www.geeksforgeeks.org/how-to-use-flask-session-in-python-flask/
 
 https://pynative.com/python-sqlite-insert-into-table/#h-using-python-variables-in-sqlite-insert-query
+
+cursor.execute("SELECT * FROM users WHERE username = ?", (name,))
