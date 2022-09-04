@@ -4,6 +4,8 @@ from flask import Flask, render_template, request, url_for, flash, redirect, ses
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from helpers import login_required
+
 # Configure application
 app = Flask(__name__)
 app.secret_key = 'cfe12ea8ea6274e9d0ec84af142c2f93d2eff31469567670'
@@ -20,6 +22,7 @@ def get_db_connection():
     return conn
 
 @app.route('/')
+@login_required
 def index():
     conn = get_db_connection()
     users = conn.execute('SELECT * FROM users').fetchall()
@@ -118,8 +121,8 @@ def login():
                 return redirect("/")
     return render_template("login.html")
 
-@app.route('/logout', methods=["GET", "POST"])
+@app.route('/logout')
 def logout():
-    session["name"] = None
+    session.clear()
     #return redirect("/")
-    return render_template("/logout.html")
+    return redirect('/')
