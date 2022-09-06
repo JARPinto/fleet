@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Transports
+{% endblock %}
+
+{% block main %}
+{% block content %}
+    <h1> Transports log</h1>
+    <h2> Here will be to input movements done by the drivers</h2>
+    <form method="POST">
+        <div>
+            <select name="plate">
+                <option disabled selected>Plate</option>
+                {% for plate in plates %}
+                    <option value="{{ plate.id }}">{{ plate.plate }}</option>
+                {%  endfor %}
+            </select>
+        </div>
+        <div>
+            <input id="km_init" name="km_init" placeholder="Km's beginning" type="text">
+        </div>
+        <div>
+            <input id="km_final" name="km_final" placeholder="Km's final" type="text">
+        </div>
+        <div>
+            <input id="gas" name="gas" placeholder="Gas" type="text">
+        </div>
+        <button type="submit">Log In</button>
+    </form>
+{% endblock %}
+{% endblock %}
