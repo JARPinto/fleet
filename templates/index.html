@@ -1,10 +1,29 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    {% for soldier in soldiers %}
-        <div class='user'>
-            <h2>{{ soldier['bim'] }}</h2>
-            <p>{{ soldier['hash'] }}</p>
-        </div>
-    {% endfor %}
+    <h1>Total movements</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>DATE</th>
+                <th>Vehicle</th>
+                <th>Km</th>
+                <th>Gas</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transport in transports %}
+                <tr>
+                    <td>{{ transport['rank'] }}</td>
+                    <td>{{ transport['name'] }}</td>
+                    <td>data -> fazer</td>
+                    <td>{{ transport['plate'] }}</td>
+                    <td>{{ transport['kms'] }} km</td>
+                    <td>{{ transport['gas'] }} L</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

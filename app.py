@@ -1,7 +1,11 @@
+from __future__ import print_function
 from crypt import methods
 from functools import reduce
+from pprint import pprint
 import re
 import sqlite3
+from string import punctuation
+from xml.sax.handler import feature_external_ges
 from flask import Flask, render_template, request, url_for, flash, redirect, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -36,9 +40,9 @@ def get_db_connection():
 @login_required
 def index():
     db = get_db_connection()
-    soldiers = db.execute('SELECT * FROM soldiers').fetchall()
+    transports = db.execute('SELECT * FROM transports').fetchall()
     db.close()
-    return render_template('index.html', soldiers=soldiers)
+    return render_template('index.html', transports=transports)
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -153,14 +157,15 @@ def logout():
 @login_required
 def transports():
     ''' Transports log '''
-    outros = ('abc', 'dcf', 'dgg', 'ggreg')
     # Query database for fleet
     db = get_db_connection()
-    plates = db.execute("SELECT * FROM fleet").fetchall()
-
-    for plate in plates:
-        print(plate)
-
+    cursor = db.cursor()
+    plates = cursor.execute("SELECT * FROM fleet").fetchall()
+    
+    #for row in plates:
+     #   print(row[0])
+      #  print(row.keys())
+       # print(row['km'])
 
     if request.method == "POST":
         user_id = session["user_id"]
@@ -170,11 +175,51 @@ def transports():
         km_final = request.form.get("km_final")
         gas = request.form.get("gas")
         
-        print(plate)
-        print(km_init)
-        print(km_final)
-        print(gas)
+        # Query for fleet data
+        fleet = cursor.execute("SELECT * FROM fleet WHERE plate = ?", (plate,)).fetchall()
+        km_actual = fleet[0]["km"]
+        
+        if not plate:
+            flash('Plate is required!')
+        elif not km_init:
+            flash('Km init is required!')
+        elif not km_final:
+            flash('Km final is required!')        
+        elif not gas:
+            flash('Gas is required! - If None insert 0')
+        elif (int(km_init) - int(km_actual)) < 0:
+            flash('Initial km not valid')
+        elif (int(km_final) - int(km_init)) < 0:
+            flash('Final km need to be higher than initial ones')
+        else:
+            km_tot = int(km_final) - int(km_init)
+            
+            user = cursor.execute("SELECT * FROM soldiers WHERE id = ?", (user_id,)).fetchall()
+            first_name = user[0]['first_name']
+            last_name = user[0]['last_name']
+            name = first_name + " " + last_name
+            #user[0]['first_name']
+            #print(user[user_id])
+            # FDXXXX
 
+            try:
+                cursor.execute('INSERT INTO transports (user_id, plate, kms, gas, name, bim, rank) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                                (user_id, plate, km_tot, gas, name, user[0]["bim"], user[0]["rank"], ))
+                # Update SQL tables
+                cursor.execute("UPDATE fleet SET km = ? WHERE plate = ?", (km_final, plate,))           
+                db.commit()
+                print("Record inserted successfully", cursor.rowcount) # Isto nem faz sentido pois só insiro uma entrada
+                cursor.close()
+            except sqlite3.Error as error:
+                print("Failed to insert data", error)
+            finally:
+                if db:
+                    db.close()
+                    print("The db connection is closed")
+                    return redirect(url_for('index'))
+                else:
+                    redirect('/')
+                    
         return redirect('/')
 
     return render_template("transports.html", plates = plates)

@@ -13,20 +13,25 @@
             <select name="plate">
                 <option disabled selected>Plate</option>
                 {% for plate in plates %}
-                    <option value="{{ plate.id }}">{{ plate.plate }}</option>
+                    <option value="{{ plate.plate }}">{{ plate.plate }}</option>
                 {%  endfor %}
             </select>
         </div>
+        <!--
         <div>
-            <input id="km_init" name="km_init" placeholder="Km's beginning" type="text">
+            <input id="date" name="date" placeholder="Date" type="date">
+        </div>
+        -->
+        <div>
+            <input id="km_init" name="km_init" placeholder="Km's beginning" type="number">
         </div>
         <div>
-            <input id="km_final" name="km_final" placeholder="Km's final" type="text">
+            <input id="km_final" name="km_final" placeholder="Km's final" type="number">
         </div>
         <div>
-            <input id="gas" name="gas" placeholder="Gas" type="text">
+            <input id="gas" name="gas" placeholder="Gas" type="number">
         </div>
-        <button type="submit">Log In</button>
+        <button type="submit">Submit</button>
     </form>
 {% endblock %}
 {% endblock %}
