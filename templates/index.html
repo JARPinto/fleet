@@ -1,29 +1,40 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
+{% block title %}
+    Index
+{% endblock %}
+
+{% block main %}
 {% block content %}
     <h1>Total movements</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Name</th>
-                <th>DATE</th>
-                <th>Vehicle</th>
-                <th>Km</th>
-                <th>Gas</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for transport in transports %}
+
+    <div class="bd-example">
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <td>{{ transport['rank'] }}</td>
-                    <td>{{ transport['name'] }}</td>
-                    <td>{{ transport['date'] }}</td>
-                    <td>{{ transport['plate'] }}</td>
-                    <td>{{ transport['kms'] }} km</td>
-                    <td>{{ transport['gas'] }} L</td>
+                    <th scope="col">#</th>       
+                    <th scope="col">Rank</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Vehicle</th>
+                    <th scope="col">Distance</th>
+                    <th scope="col">Fuel</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for transport in transports %}
+                    <tr>
+                        <td scope="row">{{ transport['id'] }}</td>
+                        <td>{{ transport['rank'] }}</td>
+                        <td>{{ transport['name'] }}</td>
+                        <td>{{ transport['date'] }}</td>
+                        <td>{{ transport['plate'] }}</td>
+                        <td>{{ transport['kms'] }} km</td>
+                        <td>{{ transport['gas'] }} L</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
 {% endblock %}
