@@ -9,6 +9,7 @@ from xml.sax.handler import feature_external_ges
 from flask import Flask, render_template, request, url_for, flash, redirect, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
+from datetime import datetime
 
 from helpers import login_required
 
@@ -48,6 +49,7 @@ def index():
 def register():
     """Register user"""
     if request.method == "POST":
+        
         # Get variables
         bim = request.form.get("bim")
         pwd = request.form.get("password")
@@ -55,9 +57,7 @@ def register():
         first_name = request.form.get("first_name")
         last_name = request.form.get("last_name")
         rank = request.form.get("rank")
-        print(bim)
-        print(pwd)
-        print(pwd_confirm)
+
         # Check variables
         if not bim:
             flash('BIM is required!')
@@ -112,8 +112,6 @@ def login():
     if request.method == "POST":
         bim = request.form.get("bim")
         pwd = request.form.get("password")
-        print("Login c/: " + bim)
-        print("Pass login: " + pwd)
         # Check variables
         if not bim:
             flash('BIM is required!')
@@ -138,11 +136,8 @@ def login():
             else:
                 # Remember BIM exists and password is correct
                 session["user_id"] = rows[0]["id"]
-                print("BIM and password correct")
-                print(rows[0]["id"])
-                
-                # Redirect user to home page 
                 return redirect("/")
+
     return render_template("login.html")
 
 @app.route('/logout')
@@ -171,9 +166,15 @@ def transports():
         user_id = session["user_id"]
         # Get template data
         plate = request.form.get("plate")
+        datestring = request.form.get("date")
         km_init = request.form.get("km_init")
         km_final = request.form.get("km_final")
         gas = request.form.get("gas")
+
+        # Gestão da data
+        # Não apagar
+        #dt = datetime.strptime(datestring, '%Y-%m-%d')
+        #print(dt.year, dt.month, dt.day)
         
         # Query for fleet data
         fleet = cursor.execute("SELECT * FROM fleet WHERE plate = ?", (plate,)).fetchall()
@@ -203,8 +204,8 @@ def transports():
             # FDXXXX
 
             try:
-                cursor.execute('INSERT INTO transports (user_id, plate, kms, gas, name, bim, rank) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                                (user_id, plate, km_tot, gas, name, user[0]["bim"], user[0]["rank"], ))
+                cursor.execute('INSERT INTO transports (user_id, date, plate, kms, gas, name, bim, rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                                (user_id, datestring, plate, km_tot, gas, name, user[0]["bim"], user[0]["rank"], ))
                 # Update SQL tables
                 cursor.execute("UPDATE fleet SET km = ? WHERE plate = ?", (km_final, plate,))           
                 db.commit()
