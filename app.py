@@ -78,7 +78,6 @@ def register():
             db = get_db_connection()
             cursor = db.cursor()
             print("Successfully Connected to SQL")
-            
             cursor.execute("SELECT * FROM soldiers WHERE bim = ?", (bim,))
             rows = cursor.fetchall()            
             
@@ -88,8 +87,10 @@ def register():
                             (bim, pwd_hash, first_name, last_name, rank))
                     db.commit()
                     print("Record inserted successfully", cursor.rowcount)
+                    cursor.execute("SELECT * FROM soldiers WHERE bim = ?", (bim,))
+                    rows = cursor.execute("SELECT * FROM soldiers WHERE bim = ?", (bim,)).fetchall()
                     cursor.close()
-                    session["user_id"] = bim
+                    session["user_id"] = rows[0]["id"]
                 except sqlite3.Error as error:
                     print("Failed to insert data", error)
                 finally:
@@ -136,6 +137,7 @@ def login():
             else:
                 # Remember BIM exists and password is correct
                 session["user_id"] = rows[0]["id"]
+                print(rows[0]["id"])
                 return redirect("/")
 
     return render_template("login.html")
@@ -146,7 +148,22 @@ def logout():
     #return redirect("/")
     print("Fez logout")
     # In the end -- render redirect('/')
-    return render_template("/logout.html")
+    data = [
+        ("01-01-2020", 1597),
+        ("02-01-2020", 1496),
+        ("03-01-2020", 1908),
+        ("04-01-2020", 896),
+        ("05-01-2020", 755),
+        ("06-01-2020", 453),
+        ("07-01-2020", 1100),
+        ("08-01-2020", 1235),
+        ("09-01-2020", 1478),
+    ]
+
+    labels = [row[0] for row in data]
+    values = [row[1] for row in data]
+
+    return render_template("/logout.html", values=values, labels=labels)
 
 @app.route('/transports', methods=["POST", "GET"])
 @login_required
@@ -164,6 +181,7 @@ def transports():
 
     if request.method == "POST":
         user_id = session["user_id"]
+        print(user_id)
         # Get template data
         plate = request.form.get("plate")
         datestring = request.form.get("date")
@@ -179,7 +197,7 @@ def transports():
         # Query for fleet data
         fleet = cursor.execute("SELECT * FROM fleet WHERE plate = ?", (plate,)).fetchall()
         km_actual = fleet[0]["km"]
-        
+
         if not plate:
             flash('Plate is required!')
         elif not km_init:
@@ -195,13 +213,13 @@ def transports():
         else:
             km_tot = int(km_final) - int(km_init)
             
-            user = cursor.execute("SELECT * FROM soldiers WHERE id = ?", (user_id,)).fetchall()
-            first_name = user[0]['first_name']
-            last_name = user[0]['last_name']
-            name = first_name + " " + last_name
-            #user[0]['first_name']
-            #print(user[user_id])
-            # FDXXXX
+            try:
+                user = cursor.execute("SELECT * FROM soldiers WHERE id = ?", (user_id,)).fetchall()            
+                first_name = user[0]["first_name"]
+                last_name = user[0]['last_name']
+                name = first_name + " " + last_name
+            except sqlite3.Error as error:
+                print("Failed to insert data", error)
 
             try:
                 cursor.execute('INSERT INTO transports (user_id, date, plate, kms, gas, name, bim, rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',

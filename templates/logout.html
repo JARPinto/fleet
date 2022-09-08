@@ -1,6 +1,8 @@
 <!-- Isto é para desaparecer depois -->
 {% extends "base.html" %}
 
+{% block head %}<script src="/static/chart.min.js"></script>{% endblock %}
+
 {% block title %}
     Log In
 {% endblock %}
@@ -8,9 +10,28 @@
 {% block main %}
 {% block content %}
 <p> LOGOUT DONE !!! </p>
-
-<script src="static/chart.min.js"></script>
-<canvas id="myChart" width="50" height="50"></canvas>
+<canvas id="linechart" width="900" height="400"></canvas>
+<script>
+    var ctx = document.getElementById("linechart").getContext("2d");
+    var linechart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: {{ labels | safe }}, // Safe is for populate
+            datasets: [
+                {
+                    label: "Data points",
+                    data: {{ values | safe }},
+                    fill: false,
+                    borderColor: "rgb(75, 192, 192)",
+                    lineTension: 0.1
+                }
+            ]
+        },
+        options: {
+            reponsive: false
+        }
+    });
+</script>
 
 
 {% endblock %}

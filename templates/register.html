@@ -4,6 +4,8 @@
     Register
 {% endblock %}
 
+{% block head %}{% endblock %}
+
 {% block main %}
 {% block content %}
     <form action = "register" method="POST">
@@ -23,7 +25,7 @@
             <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="last_name" name="last_name" placeholder="Last Name" type="text">
         </div>
         <div class="mb-3">
-            <select name="rank">
+            <select class="form-select-sm mb-3" name="rank">
                 <option disabled selected>Rank</option>
                 {% for rank in ranks %}
                     <option value="{{ rank }}">{{ rank }}</option>
