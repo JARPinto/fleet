@@ -4,39 +4,69 @@
     Index
 {% endblock %}
 
-{% block head %}{% endblock %}
+{% block head %}<script src="/static/chart.min.js"></script>{% endblock %}
 
 {% block main %}
 {% block content %}
     <h1>Total movements</h1>
+    <div class="row mb-3">
+        <div class="col-6 col-lg-4 themed-grid-col">
+            <div class="bd-example">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>       
+                            <th scope="col">Rank</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Vehicle</th>
+                            <th scope="col">Distance</th>
+                            <th scope="col">Fuel</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transport in transports %}
+                            <tr>
+                                <td scope="row">{{ transport['id'] }}</td>
+                                <td>{{ transport['rank'] }}</td>
+                                <td>{{ transport['name'] }}</td>
+                                <td>{{ transport['date'] }}</td>
+                                <td>{{ transport['plate'] }}</td>
+                                <td>{{ transport['kms'] }} km</td>
+                                <td>{{ transport['gas'] }} L</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-8 themed-grid-col">
+            <aside>
+                <canvas id="linechart" width="1000" height="400"></canvas>
+                <script>
+                    var ctx = document.getElementById("linechart").getContext("2d");
+                    var linechart = new Chart(ctx, {
+                        type: "line",
+                        data: {
+                            labels: {{ labels | safe }}, // Safe is for populate
+                            datasets: [
+                                {
+                                    label: "Data points",
+                                    data: {{ values | safe }},
+                                    fill: false,
+                                    borderColor: "rgb(75, 192, 192)",
+                                    lineTension: 0.1
+                                }
+                            ]
+                        },
+                        options: {
+                            reponsive: false
+                        }
+                    });
+                </script>
+            </aside>
+        </div>
+      </div>
 
-    <div class="bd-example">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>       
-                    <th scope="col">Rank</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Vehicle</th>
-                    <th scope="col">Distance</th>
-                    <th scope="col">Fuel</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for transport in transports %}
-                    <tr>
-                        <td scope="row">{{ transport['id'] }}</td>
-                        <td>{{ transport['rank'] }}</td>
-                        <td>{{ transport['name'] }}</td>
-                        <td>{{ transport['date'] }}</td>
-                        <td>{{ transport['plate'] }}</td>
-                        <td>{{ transport['kms'] }} km</td>
-                        <td>{{ transport['gas'] }} L</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
 {% endblock %}
 {% endblock %}

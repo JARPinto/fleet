@@ -44,9 +44,18 @@ def get_db_connection():
 @login_required
 def index():
     db = get_db_connection()
+    cursor = db.cursor()
     transports = db.execute('SELECT * FROM transports').fetchall()
+    graph_data = cursor.execute("SELECT month, SUM(kms), SUM(gas) FROM transports GROUP BY month").fetchall()
+
+    datas = [row[0] for row in graph_data]
+    distances = [row[1] for row in graph_data]
+    # gas = [row[2] for row in graph_data]
+    
+    months = [str_to_month(data) for data in datas]
+
     db.close()
-    return render_template('index.html', transports=transports)
+    return render_template('index.html', transports=transports, values=distances, labels=months)
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
