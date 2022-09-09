@@ -1,17 +1,20 @@
 from __future__ import print_function
+from cgi import test
 from crypt import methods
 from functools import reduce
 from pprint import pprint
 import re
 import sqlite3
 from string import punctuation
+from turtle import distance
 from xml.sax.handler import feature_external_ges
 from flask import Flask, render_template, request, url_for, flash, redirect, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
+import calendar
 
-from helpers import login_required
+from helpers import login_required, str_to_month
 
 # Configure application
 app = Flask(__name__)
@@ -148,22 +151,48 @@ def logout():
     #return redirect("/")
     print("Fez logout")
     # In the end -- render redirect('/')
-    data = [
-        ("01-01-2020", 1597),
-        ("02-01-2020", 1496),
-        ("03-01-2020", 1908),
-        ("04-01-2020", 896),
-        ("05-01-2020", 755),
-        ("06-01-2020", 453),
-        ("07-01-2020", 1100),
-        ("08-01-2020", 1235),
-        ("09-01-2020", 1478),
-    ]
+    
+    # Query for movements data
+    db = get_db_connection()
+    cursor = db.cursor()
+    graph_data = cursor.execute("SELECT month, SUM(kms), SUM(gas) FROM transports GROUP BY month").fetchall()
 
-    labels = [row[0] for row in data]
-    values = [row[1] for row in data]
+    # for row in graph_data:
+    #     print(row[0])
+    #     print(row.keys())
+    #     print(row["date"])
+    #     print(row['kms'])
 
-    return render_template("/logout.html", values=values, labels=labels)
+    datas = [row[0] for row in graph_data]
+    distances = [row[1] for row in graph_data]
+    gas = [row[2] for row in graph_data]
+    
+    months = [str_to_month(data) for data in datas]
+
+    print(datas)
+    print(months)
+    print(distances)
+    print(gas)
+
+    #dt = datetime.strptime(datestring, '%Y-%m-%d')
+    #print(dt.year, dt.month, dt.day)
+    
+    # data = [
+    #     ("01-01-2020", 1597),
+    #     ("02-01-2020", 1496),
+    #     ("03-01-2020", 1908),
+    #     ("04-01-2020", 896),
+    #     ("05-01-2020", 755),
+    #     ("06-01-2020", 453),
+    #     ("07-01-2020", 1100),
+    #     ("08-01-2020", 1235),
+    #     ("09-01-2020", 1478),
+    # ]
+
+    # labels = [row[0] for row in data]
+    # values = [row[1] for row in data]
+
+    return render_template("/logout.html", values=distances, labels=months)
 
 @app.route('/transports', methods=["POST", "GET"])
 @login_required
@@ -212,6 +241,11 @@ def transports():
             flash('Final km need to be higher than initial ones')
         else:
             km_tot = int(km_final) - int(km_init)
+            # month = calendar.month_name[datetime.strptime(datestring, '%Y-%m-%d').month]
+            month = datetime.strptime(datestring, '%Y-%m-%d').month
+            month = '%02d' % month
+            print(month)
+            print(type(month))
             
             try:
                 user = cursor.execute("SELECT * FROM soldiers WHERE id = ?", (user_id,)).fetchall()            
@@ -222,8 +256,8 @@ def transports():
                 print("Failed to insert data", error)
 
             try:
-                cursor.execute('INSERT INTO transports (user_id, date, plate, kms, gas, name, bim, rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                                (user_id, datestring, plate, km_tot, gas, name, user[0]["bim"], user[0]["rank"], ))
+                cursor.execute('INSERT INTO transports (user_id, date, month, plate, kms, gas, name, bim, rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                (user_id, datestring, month, plate, km_tot, gas, name, user[0]["bim"], user[0]["rank"], ))
                 # Update SQL tables
                 cursor.execute("UPDATE fleet SET km = ? WHERE plate = ?", (km_final, plate,))           
                 db.commit()
