@@ -245,14 +245,44 @@
         </div>
       </div>
       <div class="col-6 col-md-4">
-        <h1> Totals</h1>
-        <br><br>
-        <h2> Movements</h2>
-        <br>
-        <h2> Disntace </h2>
-        <br>
-        <h2> Gas </h2>  
-        <br>
+        <div class="position-sticky" style="top: 2rem;">
+            <div class="container text-center">
+                <button type="button" class="btn btn-dark btn-lg" disable> Year Totals </button>
+                <br><br>
+                <div class="row row-cols-2 align-bottom">
+                    <div class="col">
+                        <figure class="figure" style="width: 100%;max-width:50px; height: auto;">
+                            <img src="/static/cars.png" class="figure-img img-fluid rounded" alt="cars">
+                        </figure>
+                    </div>
+                    <div class="col">
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-dark btn-lg" disabled> {{ numb_tp }} Trips</button>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <figure class="figure" style="width: 100%;max-width:50px; height: auto;">
+                            <img src="/static/distance.png" class="figure-img img-fluid rounded" alt="distance">
+                        </figure>
+                    </div>
+                    <div class="col">
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-dark btn-lg" disabled> {{ numb_kms }} Kms</button>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <figure class="figure" style="width: 100%;max-width:50px; height: auto;">
+                            <img src="/static/gas-station.png" class="figure-img img-fluid rounded" alt="gas">
+                        </figure>
+                    </div>
+                    <div class="col">
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-dark btn-lg" disabled> {{ numb_gas }} L </button>
+                        </div>
+                    </div>
+                </div>
+              </div>
+        </div>
       </div>
     </div>
   </div>
