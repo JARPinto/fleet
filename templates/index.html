@@ -4,7 +4,10 @@
     Index
 {% endblock %}
 
-{% block head %}<script src="/static/chart.min.js"></script>{% endblock %}
+{% block head %}
+    <script src="/static/chart.min.js"></script>
+    <script src="/static/chartjs-plugin-datalabels.min.js"></script>
+{% endblock %}
 
 {% block main %}
 {% block content %}
@@ -42,25 +45,76 @@
         </div>
         <div class="col-sm-6 col-lg-8 themed-grid-col">
             <aside>
-                <canvas id="linechart" width="1000" height="400"></canvas>
+                <div class="chartBox">
+                    <canvas id="linechart" style="width:100%;max-width:1000px"></canvas>
+                </div>
                 <script>
                     var ctx = document.getElementById("linechart").getContext("2d");
                     var linechart = new Chart(ctx, {
                         type: "line",
+                        // Data options
                         data: {
-                            labels: {{ labels | safe }}, // Safe is for populate
-                            datasets: [
-                                {
-                                    label: "Data points",
-                                    data: {{ values | safe }},
-                                    fill: false,
-                                    borderColor: "rgb(75, 192, 192)",
-                                    lineTension: 0.1
+                            labels: {{ months | safe }}, // Safe is for populate
+                            datasets: [{
+                                borderColor: "rgb(75, 192, 192)",
+                                data: {{ distances | safe }},
+                                datalabels: {
+                                    align: 'end',
+                                    anchor: 'end',
                                 }
-                            ]
+                            }]
                         },
+                        plugins: [ChartDataLabels],
                         options: {
-                            reponsive: false
+                            responsive: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Monthly Distance (km)'
+                                },
+                                datalabels: {
+                                    backgroundColor: 'black',
+                                    borderRadius: 4,
+                                    color: 'white',
+                                    font: {
+                                        weight: 'bold'
+                                    },
+                                    formatter: Math.round,
+                                    padding: 6
+                                }
+                            },
+
+                            // Core options
+                            aspectRatio: 5 / 3,
+                            layout: {
+                                padding: {
+                                    top: 32,
+                                    right: 16,
+                                    bottom: 16,
+                                    left: 8
+                                }
+                            },
+                            elements: {
+                                line: {
+                                    fill: false,
+                                    tension: 0.4
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    stacked: true,
+                                    display: false
+                                },
+                                offset: true,
+                                x: {
+                                    grid: {
+                                        display: false
+                                    }
+                                }
+                            }
                         }
                     });
                 </script>

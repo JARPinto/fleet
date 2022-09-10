@@ -1,0 +1,260 @@
+<!-- Isto é para desaparecer depois -->
+{% extends "base.html" %}
+
+{% block head %}
+    <script src="/static/chart.min.js"></script>
+    <script src="/static/chartjs-plugin-datalabels.min.js"></script>
+{% endblock %}
+
+{% block title %}
+    Dashboard
+{% endblock %}
+
+{% block main %}
+{% block content %}
+<div class="container text-center">
+    <div class="row">
+      <div class="col-md-8">
+        <div class="row">
+            <!-- <h1> Number os Transports</h1> -->
+            <div class="chartBox">
+                <canvas id="linechart_tot" style="width:100%;max-width:1000px" height="250px"></canvas>
+            </div>
+            <script>
+                var ctx_km = document.getElementById("linechart_tot").getContext("2d");
+                var linechart = new Chart(ctx_km, {
+                    type: "line",
+                    // Data options
+                    data: {
+                        labels: {{ months | safe }}, // Safe is for populate
+                        datasets: [{
+                            borderColor: "rgb(75, 192, 192)",
+                            data: {{ totals | safe }},
+                            datalabels: {
+                                align: 'end',
+                                anchor: 'end',
+                            }
+                        }]
+                    },
+                    plugins: [ChartDataLabels],
+                    options: {
+                        responsive: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Monthly Transports (#)'
+                            },
+                            datalabels: {
+                                backgroundColor: 'black',
+                                borderRadius: 4,
+                                color: 'white',
+                                font: {
+                                    weight: 'bold'
+                                },
+                                formatter: Math.round,
+                                padding: 6
+                            }
+                        },
+
+                        // Core options
+                        aspectRatio: 5 / 3,
+                        layout: {
+                            padding: {
+                                top: 32,
+                                right: 16,
+                                bottom: 16,
+                                left: 8
+                            }
+                        },
+                        elements: {
+                            line: {
+                                fill: false,
+                                tension: 0.4
+                            }
+                        },
+                        scales: {
+                            y: {
+                                stacked: true,
+                                display: false
+                            },
+                            offset: true,
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
+        </div>
+        <div class="row">
+            <!-- <h1> Distances by month</h1> -->
+            <div class="chartBox">
+                <canvas id="linechart_km" style="width:100%;max-width:1000px" height="250px"></canvas>
+            </div>
+            <script>
+                var ctx_km = document.getElementById("linechart_km").getContext("2d");
+                var linechart = new Chart(ctx_km, {
+                    type: "line",
+                    // Data options
+                    data: {
+                        labels: {{ months | safe }}, // Safe is for populate
+                        datasets: [{
+                            borderColor: "rgb(75, 192, 192)",
+                            data: {{ distances | safe }},
+                            datalabels: {
+                                align: 'end',
+                                anchor: 'end',
+                            }
+                        }]
+                    },
+                    plugins: [ChartDataLabels],
+                    options: {
+                        responsive: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Monthly Distance (km)'
+                            },
+                            datalabels: {
+                                backgroundColor: 'black',
+                                borderRadius: 4,
+                                color: 'white',
+                                font: {
+                                    weight: 'bold'
+                                },
+                                formatter: Math.round,
+                                padding: 6
+                            }
+                        },
+
+                        // Core options
+                        aspectRatio: 5 / 3,
+                        layout: {
+                            padding: {
+                                top: 32,
+                                right: 16,
+                                bottom: 16,
+                                left: 8
+                            }
+                        },
+                        elements: {
+                            line: {
+                                fill: false,
+                                tension: 0.4
+                            }
+                        },
+                        scales: {
+                            y: {
+                                stacked: true,
+                                display: false
+                            },
+                            offset: true,
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
+        </div>
+        <div class="row">
+            <!-- <h1> Gas by month</h1> -->
+            <div class="chartBox">
+                <canvas id="linechart_gas" style="width:100%;max-width:1000px" height="250px"></canvas>
+            </div>
+            <script>
+                var ctx_gas = document.getElementById("linechart_gas").getContext("2d");
+                var linechart = new Chart(ctx_gas, {
+                    type: "line",
+                    // Data options
+                    data: {
+                        labels: {{ months | safe }}, // Safe is for populate
+                        datasets: [{
+                            borderColor: "rgb(75, 192, 192)",
+                            data: {{ fuel | safe }},
+                            datalabels: {
+                                align: 'end',
+                                anchor: 'end',
+                            }
+                        }]
+                    },
+                    plugins: [ChartDataLabels],
+                    options: {
+                        responsive: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Monthly Fuel (L)'
+                            },
+                            datalabels: {
+                                backgroundColor: 'black',
+                                borderRadius: 4,
+                                color: 'white',
+                                font: {
+                                    weight: 'bold'
+                                },
+                                formatter: Math.round,
+                                padding: 6
+                            }
+                        },
+
+                        // Core options
+                        aspectRatio: 5 / 3,
+                        layout: {
+                            padding: {
+                                top: 32,
+                                right: 16,
+                                bottom: 16,
+                                left: 8
+                            }
+                        },
+                        elements: {
+                            line: {
+                                fill: false,
+                                tension: 0.4
+                            }
+                        },
+                        scales: {
+                            y: {
+                                stacked: true,
+                                display: false
+                            },
+                            offset: true,
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
+        </div>
+      </div>
+      <div class="col-6 col-md-4">
+        <h1> Totals</h1>
+        <br><br>
+        <h2> Movements</h2>
+        <br>
+        <h2> Disntace </h2>
+        <br>
+        <h2> Gas </h2>  
+        <br>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% endblock %}

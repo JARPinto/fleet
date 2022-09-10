@@ -55,7 +55,45 @@ def index():
     months = [str_to_month(data) for data in datas]
 
     db.close()
-    return render_template('index.html', transports=transports, values=distances, labels=months)
+    return render_template('index.html', transports=transports, distances=distances, months=months)
+
+@app.route('/history')
+@login_required
+def history():
+    db = get_db_connection()
+    transports = db.execute('SELECT * FROM transports').fetchall()
+    db.close()
+    return render_template('history.html', transports=transports)
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    # Totals data
+    transports = db.execute('SELECT MAX(id) as id , SUM(kms) as kms , SUM(gas) as gas FROM transports').fetchall()
+    numb_tp = transports[0]['id']
+    numb_kms = transports[0]['kms']
+    numb_gas = transports[0]['gas']
+
+    print(transports[0].keys())
+    # print(numb_kms)
+    # print(numb_gas)
+
+    # Monthly data
+    graph_data = cursor.execute("SELECT month, SUM(kms), SUM(gas), SUM(month) FROM transports GROUP BY month").fetchall()
+
+    datas = [row[0] for row in graph_data]
+    distances = [row[1] for row in graph_data]
+    gas = [row[2] for row in graph_data]
+    totals = [row[3] for row in graph_data]
+    
+    months = [str_to_month(data) for data in datas]
+    db.close()
+
+    return render_template('dashboard.html', distances=distances, months=months, fuel=gas, totals=totals,
+                    numb_tp=numb_tp, numb_kms=numb_kms, numb_gas=numb_gas)
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
