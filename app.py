@@ -40,22 +40,129 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-@app.route('/')
+@app.route('/', methods=["POST", "GET"])
 @login_required
 def index():
+
+    ''' Transports log '''
+    # Query database for fleet
     db = get_db_connection()
     cursor = db.cursor()
-    transports = db.execute('SELECT * FROM transports').fetchall()
-    graph_data = cursor.execute("SELECT month, SUM(kms), SUM(gas) FROM transports GROUP BY month").fetchall()
-
-    datas = [row[0] for row in graph_data]
-    distances = [row[1] for row in graph_data]
-    # gas = [row[2] for row in graph_data]
+    plates = cursor.execute("SELECT * FROM fleet").fetchall()
     
+    #for row in plates:
+     #   print(row[0])
+      #  print(row.keys())
+       # print(row['km'])
+
+    if request.method == "POST":
+        user_id = session["user_id"]
+        print(user_id)
+        # Get template data
+        plate = request.form.get("plate")
+        datestring = request.form.get("date")
+        km_init = request.form.get("km_init")
+        km_final = request.form.get("km_final")
+        gas = request.form.get("gas")
+
+        # Gestão da data
+        # Não apagar
+        #dt = datetime.strptime(datestring, '%Y-%m-%d')
+        #print(dt.year, dt.month, dt.day)
+        
+        # Query for new transport input
+        fleet = cursor.execute("SELECT * FROM fleet WHERE plate = ?", (plate,)).fetchall()
+        km_actual = fleet[0]["km"]
+
+        if not plate:
+            flash('Plate is required!')
+        elif not km_init:
+            flash('Km init is required!')
+        elif not km_final:
+            flash('Km final is required!')        
+        elif not gas:
+            flash('Gas is required! - If None insert 0')
+        elif (int(km_init) - int(km_actual)) < 0:
+            flash('Initial km not valid')
+        elif (int(km_final) - int(km_init)) < 0:
+            flash('Final km need to be higher than initial ones')
+        else:
+            km_tot = int(km_final) - int(km_init)
+            # month = calendar.month_name[datetime.strptime(datestring, '%Y-%m-%d').month]
+            month = datetime.strptime(datestring, '%Y-%m-%d').month
+            month = '%02d' % month
+            print(month)
+            print(type(month))
+            
+            try:
+                user = cursor.execute("SELECT * FROM soldiers WHERE id = ?", (user_id,)).fetchall()            
+                first_name = user[0]["first_name"]
+                last_name = user[0]['last_name']
+                name = first_name + " " + last_name
+            except sqlite3.Error as error:
+                print("Failed to insert data", error)
+
+            try:
+                cursor.execute('INSERT INTO transports (user_id, date, month, plate, kms, gas, name, bim, rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                (user_id, datestring, month, plate, km_tot, gas, name, user[0]["bim"], user[0]["rank"], ))
+                # Update SQL tables
+                cursor.execute("UPDATE fleet SET km = ? WHERE plate = ?", (km_final, plate,))           
+                db.commit()
+                print("Record inserted successfully", cursor.rowcount) # Isto nem faz sentido pois só insiro uma entrada
+                cursor.close()
+            except sqlite3.Error as error:
+                print("Failed to insert data", error)
+            finally:
+                if db:
+                    db.close()
+                    print("The db connection is closed")
+                    return redirect(url_for('index'))
+                else:
+                    redirect('/')
+                    
+        return redirect('/')
+        # End of new transport input
+
+    ##################################
+    # Open DB and vars
+    db = get_db_connection()
+    cursor = db.cursor()
+    user_id = session["user_id"]
+
+    
+    ##################################
+    # Table definition
+    transports = db.execute('SELECT * FROM transports WHERE user_id = ? ORDER BY date DESC', (user_id, )).fetchmany(size=5)
+
+    ##################################
+    # Graph definition
+    # Monthly data by user
+    graph_data = cursor.execute('SELECT month, SUM(month), SUM(kms) FROM transports WHERE user_id = ? GROUP BY month', (user_id, )).fetchall()
+    datas = [row[0] for row in graph_data]
     months = [str_to_month(data) for data in datas]
+    totals_id = [row[1] for row in graph_data]
+    # Still need to use this
+    kms_id = [row[2] for row in graph_data]
+
+    # 5 Most user vehicles
+    # Need to make a circular graph now
+    graph_data_vehicles = cursor.execute('SELECT plate, SUM(plate), SUM(kms) FROM transports WHERE user_id = ? GROUP BY plate', (user_id, )).fetchall()
+    plates_name = [row[0] for row in graph_data_vehicles]
+    plates_count = [row[1] for row in graph_data_vehicles]
+    plates_kms = [row[2] for row in graph_data_vehicles]
+    
+
+    ##################################
+    # Totals data
+    # transports_data = db.execute('SELECT COUNT(user_id) as count_id , SUM(kms) as kms FROM transports WHERE user_id = ?', (user_id, )).fetchall()
+    # count_id = transports_data[0]['count_id']
+    # tot_kms = transports_data[0]['kms']
 
     db.close()
-    return render_template('index.html', transports=transports, distances=distances, months=months)
+
+    return render_template('index.html', plates = plates, transports=transports, months=months, totals_id=totals_id,
+                    kms_id=kms_id, plates_name=plates_name, plates_kms=plates_kms)
+                    # kms_id=kms_id, count_id=count_id, tot_kms=tot_kms)
 
 @app.route('/history')
 @login_required
@@ -76,10 +183,6 @@ def dashboard():
     numb_tp = transports[0]['id']
     numb_kms = transports[0]['kms']
     numb_gas = transports[0]['gas']
-
-    print(transports[0].keys())
-    # print(numb_kms)
-    # print(numb_gas)
 
     # Monthly data
     graph_data = cursor.execute("SELECT month, SUM(kms), SUM(gas), SUM(month) FROM transports GROUP BY month").fetchall()
@@ -241,85 +344,100 @@ def logout():
 
     return render_template("/logout.html", values=distances, labels=months)
 
-@app.route('/transports', methods=["POST", "GET"])
+@app.route('/consumption')
 @login_required
-def transports():
-    ''' Transports log '''
-    # Query database for fleet
+def consumption():
     db = get_db_connection()
     cursor = db.cursor()
-    plates = cursor.execute("SELECT * FROM fleet").fetchall()
     
-    #for row in plates:
-     #   print(row[0])
-      #  print(row.keys())
-       # print(row['km'])
+    transports = cursor.execute('SELECT * FROM transports').fetchall()
+    months = cursor.execute("SELECT month FROM transports GROUP BY month").fetchall()
+    # months = [str_to_month(month) for month in months]
 
-    if request.method == "POST":
-        user_id = session["user_id"]
-        print(user_id)
-        # Get template data
-        plate = request.form.get("plate")
-        datestring = request.form.get("date")
-        km_init = request.form.get("km_init")
-        km_final = request.form.get("km_final")
-        gas = request.form.get("gas")
 
-        # Gestão da data
-        # Não apagar
-        #dt = datetime.strptime(datestring, '%Y-%m-%d')
-        #print(dt.year, dt.month, dt.day)
+    db.close()
+    return render_template('consumption.html', months=months, transports=transports)
+
+
+# @app.route('/transports', methods=["POST", "GET"])
+# @login_required
+# def transports():
+#     ''' Transports log '''
+#     # Query database for fleet
+#     db = get_db_connection()
+#     cursor = db.cursor()
+#     plates = cursor.execute("SELECT * FROM fleet").fetchall()
+    
+#     #for row in plates:
+#      #   print(row[0])
+#       #  print(row.keys())
+#        # print(row['km'])
+
+#     if request.method == "POST":
+#         user_id = session["user_id"]
+#         print(user_id)
+#         # Get template data
+#         plate = request.form.get("plate")
+#         datestring = request.form.get("date")
+#         km_init = request.form.get("km_init")
+#         km_final = request.form.get("km_final")
+#         gas = request.form.get("gas")
+
+#         # Gestão da data
+#         # Não apagar
+#         #dt = datetime.strptime(datestring, '%Y-%m-%d')
+#         #print(dt.year, dt.month, dt.day)
         
-        # Query for fleet data
-        fleet = cursor.execute("SELECT * FROM fleet WHERE plate = ?", (plate,)).fetchall()
-        km_actual = fleet[0]["km"]
+#         # Query for fleet data
+#         fleet = cursor.execute("SELECT * FROM fleet WHERE plate = ?", (plate,)).fetchall()
+#         km_actual = fleet[0]["km"]
 
-        if not plate:
-            flash('Plate is required!')
-        elif not km_init:
-            flash('Km init is required!')
-        elif not km_final:
-            flash('Km final is required!')        
-        elif not gas:
-            flash('Gas is required! - If None insert 0')
-        elif (int(km_init) - int(km_actual)) < 0:
-            flash('Initial km not valid')
-        elif (int(km_final) - int(km_init)) < 0:
-            flash('Final km need to be higher than initial ones')
-        else:
-            km_tot = int(km_final) - int(km_init)
-            # month = calendar.month_name[datetime.strptime(datestring, '%Y-%m-%d').month]
-            month = datetime.strptime(datestring, '%Y-%m-%d').month
-            month = '%02d' % month
-            print(month)
-            print(type(month))
+#         if not plate:
+#             flash('Plate is required!')
+#         elif not km_init:
+#             flash('Km init is required!')
+#         elif not km_final:
+#             flash('Km final is required!')        
+#         elif not gas:
+#             flash('Gas is required! - If None insert 0')
+#         elif (int(km_init) - int(km_actual)) < 0:
+#             flash('Initial km not valid')
+#         elif (int(km_final) - int(km_init)) < 0:
+#             flash('Final km need to be higher than initial ones')
+#         else:
+#             km_tot = int(km_final) - int(km_init)
+#             # month = calendar.month_name[datetime.strptime(datestring, '%Y-%m-%d').month]
+#             month = datetime.strptime(datestring, '%Y-%m-%d').month
+#             month = '%02d' % month
+#             print(month)
+#             print(type(month))
             
-            try:
-                user = cursor.execute("SELECT * FROM soldiers WHERE id = ?", (user_id,)).fetchall()            
-                first_name = user[0]["first_name"]
-                last_name = user[0]['last_name']
-                name = first_name + " " + last_name
-            except sqlite3.Error as error:
-                print("Failed to insert data", error)
+#             try:
+#                 user = cursor.execute("SELECT * FROM soldiers WHERE id = ?", (user_id,)).fetchall()            
+#                 first_name = user[0]["first_name"]
+#                 last_name = user[0]['last_name']
+#                 name = first_name + " " + last_name
+#             except sqlite3.Error as error:
+#                 print("Failed to insert data", error)
 
-            try:
-                cursor.execute('INSERT INTO transports (user_id, date, month, plate, kms, gas, name, bim, rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                                (user_id, datestring, month, plate, km_tot, gas, name, user[0]["bim"], user[0]["rank"], ))
-                # Update SQL tables
-                cursor.execute("UPDATE fleet SET km = ? WHERE plate = ?", (km_final, plate,))           
-                db.commit()
-                print("Record inserted successfully", cursor.rowcount) # Isto nem faz sentido pois só insiro uma entrada
-                cursor.close()
-            except sqlite3.Error as error:
-                print("Failed to insert data", error)
-            finally:
-                if db:
-                    db.close()
-                    print("The db connection is closed")
-                    return redirect(url_for('index'))
-                else:
-                    redirect('/')
+#             try:
+#                 cursor.execute('INSERT INTO transports (user_id, date, month, plate, kms, gas, name, bim, rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+#                                 (user_id, datestring, month, plate, km_tot, gas, name, user[0]["bim"], user[0]["rank"], ))
+#                 # Update SQL tables
+#                 cursor.execute("UPDATE fleet SET km = ? WHERE plate = ?", (km_final, plate,))           
+#                 db.commit()
+#                 print("Record inserted successfully", cursor.rowcount) # Isto nem faz sentido pois só insiro uma entrada
+#                 cursor.close()
+#             except sqlite3.Error as error:
+#                 print("Failed to insert data", error)
+#             finally:
+#                 if db:
+#                     db.close()
+#                     print("The db connection is closed")
+#                     return redirect(url_for('index'))
+#                 else:
+#                     redirect('/')
                     
-        return redirect('/')
+#         return redirect('/')
 
-    return render_template("transports.html", plates = plates)
+#     return render_template("transports.html", plates = plates)

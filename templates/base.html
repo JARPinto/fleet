@@ -23,9 +23,15 @@
                 <div class="collapse navbar-collapse" id="navbar">
                     {% if session["user_id"] %}
                         <ul class="navbar-nav me-auto mt-2">
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('transports') }}">Transports</a></li>
+                            <!-- 
+                                <li class="nav-item"><a class="nav-link" href="{# {{ url_for('transports') }} #}">Transports</a>
+                            </li> -->
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('consumption') }}">Consumption</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('history') }}">History</a></li>
+                            <!-- {# {% if session["user_id"] == 1 %}
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                            {% endif %} #} -->
                         </ul>
                         <ul class="navbar-nav ms-auto mt-2">
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Log Out</a></li>
@@ -51,10 +57,14 @@
         <main class="container-fluid py-5 text-center">
             {% block main %}{% endblock %}
         </main>
-
-        <footer class="mb-5 small text-center text-muted">
+        <footer class="footer mt-auto py-3 bg-light">
+            <div class="container">
+              <span class="text-muted">Project by José Pinto</span>
+            </div>
+          </footer>
+        <!-- <footer class="mb-5 small text-center text-muted">
             Project by José Pinto</a>
-        </footer>
+        </footer> -->
 
     </body>
 

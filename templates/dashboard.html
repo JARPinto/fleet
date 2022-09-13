@@ -28,7 +28,7 @@
                     data: {
                         labels: {{ months | safe }}, // Safe is for populate
                         datasets: [{
-                            borderColor: "rgb(75, 192, 192)",
+                            borderColor: "green",
                             data: {{ totals | safe }},
                             datalabels: {
                                 align: 'end',
@@ -45,7 +45,16 @@
                             },
                             title: {
                                 display: true,
-                                text: 'Monthly Transports (#)'
+                                text: 'Monthly Transports (#)',
+                                position: 'top',
+                                align: 'start',
+                                fullSize: 'false',
+                                color: 'rgb(0,0,0)',
+                                font: {
+                                    weight: 'bold',
+                                    size: 20
+                                }
+                                
                             },
                             datalabels: {
                                 backgroundColor: 'black',
@@ -104,7 +113,7 @@
                     data: {
                         labels: {{ months | safe }}, // Safe is for populate
                         datasets: [{
-                            borderColor: "rgb(75, 192, 192)",
+                            borderColor: "brown",
                             data: {{ distances | safe }},
                             datalabels: {
                                 align: 'end',
@@ -121,7 +130,15 @@
                             },
                             title: {
                                 display: true,
-                                text: 'Monthly Distance (km)'
+                                text: 'Monthly Distance (km)',
+                                position: 'top',
+                                align: 'start',
+                                fullSize: 'false',
+                                color: 'rgb(0,0,0)',
+                                font: {
+                                    weight: 'bold',
+                                    size: 20
+                                }
                             },
                             datalabels: {
                                 backgroundColor: 'black',
@@ -180,7 +197,7 @@
                     data: {
                         labels: {{ months | safe }}, // Safe is for populate
                         datasets: [{
-                            borderColor: "rgb(75, 192, 192)",
+                            borderColor: "orange",
                             data: {{ fuel | safe }},
                             datalabels: {
                                 align: 'end',
@@ -197,7 +214,15 @@
                             },
                             title: {
                                 display: true,
-                                text: 'Monthly Fuel (L)'
+                                text: 'Monthly Fuel (L)',
+                                position: 'top',
+                                align: 'start',
+                                fullSize: 'false',
+                                color: 'rgb(0,0,0)',
+                                font: {
+                                    weight: 'bold',
+                                    size: 20
+                                }
                             },
                             datalabels: {
                                 backgroundColor: 'black',
@@ -247,7 +272,7 @@
       <div class="col-6 col-md-4">
         <div class="position-sticky" style="top: 2rem;">
             <div class="container text-center">
-                <button type="button" class="btn btn-dark btn-lg" disable> Year Totals </button>
+                <button type="button" class="btn btn-dark btn-lg" disabled> Year Totals </button>
                 <br><br>
                 <div class="row row-cols-2 align-bottom">
                     <div class="col">

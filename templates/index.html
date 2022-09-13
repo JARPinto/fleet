@@ -11,16 +11,44 @@
 
 {% block main %}
 {% block content %}
-    <h1>Total movements</h1>
-    <div class="row mb-3">
-        <div class="col-6 col-lg-4 themed-grid-col">
+
+<div class="container text-center">
+    <div class="row">
+        <p class="center">WELCOME</p>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <button type="button" class="btn btn-outline-primary btn-lg" disabled> <p> INSERT NEW MOVEMENT </button></p>
+    <form method="POST">
+        <div class="mb-3">
+            <select name="plate">
+                <option disabled selected>Plate</option>
+                {% for plate in plates %}
+                    <option value="{{ plate.plate }}">{{ plate.plate }}</option>
+                {%  endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="date" name="date" placeholder="Date" type="date">
+        </div>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="km_init" name="km_init" placeholder="Km's beginning" type="number">
+        </div>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="km_final" name="km_final" placeholder="Km's final" type="number">
+        </div>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="gas" name="gas" placeholder="Fuel (Lts)" type="number">
+        </div>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+        </div>
+        <div class="col-6">
             <div class="bd-example">
+                <p><button class="btn btn-outline-success"> Yours last 5 transports </button></p>
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th scope="col">#</th>       
-                            <th scope="col">Rank</th>
-                            <th scope="col">Name</th>
                             <th scope="col">Date</th>
                             <th scope="col">Vehicle</th>
                             <th scope="col">Distance</th>
@@ -30,10 +58,7 @@
                     <tbody>
                         {% for transport in transports %}
                             <tr>
-                                <td scope="row">{{ transport['id'] }}</td>
-                                <td>{{ transport['rank'] }}</td>
-                                <td>{{ transport['name'] }}</td>
-                                <td>{{ transport['date'] }}</td>
+                                <td scope="row">{{ transport['date'] }}</td>
                                 <td>{{ transport['plate'] }}</td>
                                 <td>{{ transport['kms'] }} km</td>
                                 <td>{{ transport['gas'] }} L</td>
@@ -43,21 +68,26 @@
                 </table>
             </div>
         </div>
-        <div class="col-sm-6 col-lg-8 themed-grid-col">
-            <aside>
+    </div>
+    <div class="row">
+        <p class="center">LAST LINE</p>
+    </div>
+    <div class="row">
+        <div class="col col-md-8">
+            <div class="row">
                 <div class="chartBox">
-                    <canvas id="linechart" style="width:100%;max-width:1000px"></canvas>
+                    <canvas id="linechart_tot_id" style="width:100%;max-width:1000px" height="220px"></canvas>
                 </div>
                 <script>
-                    var ctx = document.getElementById("linechart").getContext("2d");
-                    var linechart = new Chart(ctx, {
+                    var ctx_km = document.getElementById("linechart_tot_id").getContext("2d");
+                    var linechart = new Chart(ctx_km, {
                         type: "line",
                         // Data options
                         data: {
                             labels: {{ months | safe }}, // Safe is for populate
                             datasets: [{
                                 borderColor: "rgb(75, 192, 192)",
-                                data: {{ distances | safe }},
+                                data: {{ totals_id | safe }},
                                 datalabels: {
                                     align: 'end',
                                     anchor: 'end',
@@ -73,7 +103,16 @@
                                 },
                                 title: {
                                     display: true,
-                                    text: 'Monthly Distance (km)'
+                                    text: 'Your Transports by month',
+                                    position: 'top',
+                                    align: 'start',
+                                    fullSize: 'false',
+                                    color: 'rgb(0,0,0)',
+                                    font: {
+                                        weight: 'bold',
+                                        size: 20
+                                    }
+                                    
                                 },
                                 datalabels: {
                                     backgroundColor: 'black',
@@ -118,9 +157,172 @@
                         }
                     });
                 </script>
-            </aside>
+            </div>
+            <div class="row">
+                <div class="chartBox">
+                    <canvas id="linechart_kms_id" style="width:100%;max-width:1000px" height="220px"></canvas>
+                </div>
+                <script>
+                    var ctx_km = document.getElementById("linechart_kms_id").getContext("2d");
+                    var linechart = new Chart(ctx_km, {
+                        type: "line",
+                        // Data options
+                        data: {
+                            labels: {{ months | safe }}, // Safe is for populate
+                            datasets: [{
+                                borderColor: "rgb(75, 192, 192)",
+                                data: {{ kms_id | safe }},
+                                datalabels: {
+                                    align: 'end',
+                                    anchor: 'end',
+                                }
+                            }]
+                        },
+                        plugins: [ChartDataLabels],
+                        options: {
+                            responsive: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Your Kms by month',
+                                    position: 'top',
+                                    align: 'start',
+                                    fullSize: 'false',
+                                    color: 'rgb(0,0,0)',
+                                    font: {
+                                        weight: 'bold',
+                                        size: 20
+                                    }
+                                    
+                                },
+                                datalabels: {
+                                    backgroundColor: 'black',
+                                    borderRadius: 4,
+                                    color: 'white',
+                                    font: {
+                                        weight: 'bold'
+                                    },
+                                    formatter: Math.round,
+                                    padding: 6
+                                }
+                            },
+
+                            // Core options
+                            aspectRatio: 5 / 3,
+                            layout: {
+                                padding: {
+                                    top: 32,
+                                    right: 16,
+                                    bottom: 16,
+                                    left: 8
+                                }
+                            },
+                            elements: {
+                                line: {
+                                    fill: false,
+                                    tension: 0.4
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    stacked: true,
+                                    display: false
+                                },
+                                offset: true,
+                                x: {
+                                    grid: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        }
+                    });
+                </script>
+            </div>
         </div>
-      </div>
+        <div class="col col-md-4">
+            <div class="chartBox">
+                <canvas id="doughnut" style="width:100%;max-width:500px" height="400px"></canvas>
+            </div>
+            <script>
+                var ctx_km = document.getElementById("doughnut").getContext("2d");
+                var linechart = new Chart(ctx_km, {
+                    type: 'doughnut',
+                    // Data options
+                    data: {
+                        labels: {{ plates_name | safe }}, // Safe is for populate
+                        datasets: [{
+                            data: {{ plates_kms | safe }},
+                            // borderColor: "black",
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.5)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(129, 206, 150, 0.2)',
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(129, 206, 150, 1)',
+                            ],
+                            datalabels: {
+                                align: '',
+                                anchor: '',
+                            }
+                        }]
+                    },
+                    plugins: [ChartDataLabels],
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom', 
+                            },
+                            title: {
+                                display: true,
+                                text: 'Your top 5 vehicles (kms)',
+                                position: 'top',
+                                align: 'start',
+                                fullSize: 'false',
+                                color: 'rgb(0,0,0)',
+                                font: {
+                                    weight: 'bold',
+                                    size: 20
+                                }
+                                
+                            },
+                            datalabels: {
+                                backgroundColor: 'black',
+                                borderRadius: 4,
+                                color: 'white',
+                                font: {
+                                    weight: 'bold'
+                                },
+                                formatter: Math.round,
+                                padding: 6
+                            }
+                        },
+                        // Core options
+                        aspectRatio: 1,
+                    }
+                });
+        </script>
+        </div>
+        <div class="position-sticky" style="top: 2rem;">
+            <!-- <h1> Number os Transports</h1> -->
+            
+        </div>
+    </div>
+</div>
+
+<p>Aqui jaz index</p>
 
 {% endblock %}
 {% endblock %}
