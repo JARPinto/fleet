@@ -13,11 +13,14 @@
 {% block main %}
 {% block content %}
 <div class="container text-center">
+    
     <div class="row">
+    <!-- Divide in two parts, more space to graphs-->
       <div class="col-md-8">
+        <!-- 1 of 3 line graph -->
         <div class="row">
-            <!-- <h1> Number os Transports</h1> -->
-            <div class="chartBox">
+            <!-- Number of trips graph -->
+            <div class="chartBox" style="background-color: rgba(80, 59, 23, 0.03); border-radius: 20px; margin-bottom: 4px;">
                 <canvas id="linechart_tot" style="width:100%;max-width:1000px" height="250px"></canvas>
             </div>
             <script>
@@ -26,14 +29,15 @@
                     type: "line",
                     // Data options
                     data: {
-                        labels: {{ months | safe }}, // Safe is for populate
+                        labels: {{ months | safe }},
                         datasets: [{
-                            borderColor: "green",
+                            backgroundColor: 'rgba(80, 59, 23, 0.8)',
+                            borderColor: "rgba(179, 125, 33, 0.8)",
                             data: {{ totals | safe }},
                             datalabels: {
                                 align: 'end',
                                 anchor: 'end',
-                            }
+                            },
                         }]
                     },
                     plugins: [ChartDataLabels],
@@ -57,7 +61,7 @@
                                 
                             },
                             datalabels: {
-                                backgroundColor: 'black',
+                                backgroundColor: 'rgba(80, 59, 23, 0.8)',
                                 borderRadius: 4,
                                 color: 'white',
                                 font: {
@@ -81,7 +85,7 @@
                         elements: {
                             line: {
                                 fill: false,
-                                tension: 0.4
+                                tension: 0.2
                             }
                         },
                         scales: {
@@ -100,9 +104,11 @@
                 });
             </script>
         </div>
+
+        <!-- 2 of 3 line graph -->
         <div class="row">
-            <!-- <h1> Distances by month</h1> -->
-            <div class="chartBox">
+            <!-- Kms graph -->
+            <div class="chartBox" style="background-color: rgba(20, 60, 47, 0.03); border-radius: 20px; margin-bottom: 4px;">
                 <canvas id="linechart_km" style="width:100%;max-width:1000px" height="250px"></canvas>
             </div>
             <script>
@@ -113,7 +119,8 @@
                     data: {
                         labels: {{ months | safe }}, // Safe is for populate
                         datasets: [{
-                            borderColor: "brown",
+                            backgroundColor: 'rgba(20, 60, 47, 0.9)',
+                            borderColor: "rgba(41, 86, 71, 0.79)",
                             data: {{ distances | safe }},
                             datalabels: {
                                 align: 'end',
@@ -141,7 +148,7 @@
                                 }
                             },
                             datalabels: {
-                                backgroundColor: 'black',
+                                backgroundColor: 'rgba(20, 60, 47, 0.9)',
                                 borderRadius: 4,
                                 color: 'white',
                                 font: {
@@ -165,7 +172,7 @@
                         elements: {
                             line: {
                                 fill: false,
-                                tension: 0.4
+                                tension: 0.2
                             }
                         },
                         scales: {
@@ -184,20 +191,23 @@
                 });
             </script>
         </div>
+
+        <!-- 3 of 3 line graph -->
         <div class="row">
-            <!-- <h1> Gas by month</h1> -->
-            <div class="chartBox">
-                <canvas id="linechart_gas" style="width:100%;max-width:1000px" height="250px"></canvas>
+            <!-- Fuel graph -->
+            <div class="chartBox" style="background-color: rgba(36, 20, 66, 0.03); border-radius: 20px;">
+                <canvas id="linechart_fuel" style="width:100%;max-width:1000px" height="250px"></canvas>
             </div>
             <script>
-                var ctx_gas = document.getElementById("linechart_gas").getContext("2d");
+                var ctx_gas = document.getElementById("linechart_fuel").getContext("2d");
                 var linechart = new Chart(ctx_gas, {
                     type: "line",
                     // Data options
                     data: {
                         labels: {{ months | safe }}, // Safe is for populate
                         datasets: [{
-                            borderColor: "orange",
+                            backgroundColor: 'rgba(36, 20, 66, 0.84)',
+                            borderColor: "rgba(57, 36, 94, 0.78)",
                             data: {{ fuel | safe }},
                             datalabels: {
                                 align: 'end',
@@ -214,7 +224,7 @@
                             },
                             title: {
                                 display: true,
-                                text: 'Monthly Fuel (L)',
+                                text: 'Monthly Fuel (Lt)',
                                 position: 'top',
                                 align: 'start',
                                 fullSize: 'false',
@@ -225,7 +235,7 @@
                                 }
                             },
                             datalabels: {
-                                backgroundColor: 'black',
+                                backgroundColor: 'rgba(36, 20, 66, 0.84)',
                                 borderRadius: 4,
                                 color: 'white',
                                 font: {
@@ -249,7 +259,7 @@
                         elements: {
                             line: {
                                 fill: false,
-                                tension: 0.4
+                                tension: 0.2
                             }
                         },
                         scales: {
@@ -269,10 +279,13 @@
             </script>
         </div>
       </div>
+      
+      <!-- Years totals on snd column-->
       <div class="col-6 col-md-4">
+        <!-- Sticky position not dissapear during scroll down-->
         <div class="position-sticky" style="top: 2rem;">
             <div class="container text-center">
-                <button type="button" class="btn btn-dark btn-lg" disabled> Year Totals </button>
+                <h4 style="padding-top: 20px;"> Year Totals </h4>
                 <br><br>
                 <div class="row row-cols-2 align-bottom">
                     <div class="col">
@@ -302,7 +315,7 @@
                     </div>
                     <div class="col">
                         <div class="d-grid gap-2">
-                            <button type="button" class="btn btn-outline-dark btn-lg" disabled> {{ numb_gas }} L </button>
+                            <button type="button" class="btn btn-outline-dark btn-lg" disabled> {{ numb_gas }} Lt </button>
                         </div>
                     </div>
                 </div>

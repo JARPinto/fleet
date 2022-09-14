@@ -1,7 +1,28 @@
 <!-- Isto é para desaparecer depois -->
 {% extends "base.html" %}
 
-{% block head %}{% endblock %}
+{% block head %}
+    <style>
+        table {
+            text-align: center;
+            position: relative;
+            border-collapse: collapse; 
+        }
+        th, td {
+            padding: 0.25rem;
+        }
+        tr.white th {
+            background: white;
+            color: black;
+        }
+        th {
+            background: white;
+            position: sticky;
+            top: 0; /* required for the stickiness */
+            box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+{% endblock %}
 
 {% block title %}
     History
@@ -14,7 +35,7 @@
     <div class="bd-example">
         <table class="table table-striped">
             <thead>
-                <tr>
+                <tr class="white">
                     <th scope="col">#</th>       
                     <th scope="col">Rank</th>
                     <th scope="col">Name</th>

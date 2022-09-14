@@ -11,45 +11,41 @@
 {% block content %}
 <p> LOGOUT DONE !!! </p>
     <div>
-
     <form method="POST">
         <div class="mb-3">
-            <select name="plate">
+            <select name="month">
                 <option disabled selected>Month</option>
                 {% for month in months %}
                     <option value="{{ month.month }}">{{ month.month }}</option>
                 {%  endfor %}
             </select>
         </div>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </div>
     </form>
     <p></p>
-        <div class="bd-example">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>       
-                        <th scope="col">Rank</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Vehicle</th>
-                        <th scope="col">Distance</th>
-                        <th scope="col">Fuel</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for transport in transports %}
+        <div class="container-md">
+            <div class="col col-md-6">
+                <table class="table table-striped">
+                    <thead>
                         <tr>
-                            <td scope="row">{{ transport['id'] }}</td>
-                            <td>{{ transport['rank'] }}</td>
-                            <td>{{ transport['name'] }}</td>
-                            <td>{{ transport['date'] }}</td>
-                            <td>{{ transport['plate'] }}</td>
-                            <td>{{ transport['kms'] }} km</td>
-                            <td>{{ transport['gas'] }} L</td>
+                            <th scope="col">Plate</th>       
+                            <th scope="col">Distance (kms)</th>
+                            <th scope="col">Fuel (Lt)</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for data in table_data %}
+                            <tr>
+                                <td scope="row">{{ data['plate'] }}</td>
+                                <td>{{ data['kms'] }} </td>
+                                <td>{{ data['gas'] }} </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
         </div>
     </div>
     

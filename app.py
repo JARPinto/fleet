@@ -2,6 +2,7 @@ from __future__ import print_function
 from cgi import test
 from crypt import methods
 from functools import reduce
+from operator import le
 from pprint import pprint
 import re
 import sqlite3
@@ -40,6 +41,45 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+
+@app.route ("/login", methods=["POST", "GET"])
+def login():
+    """Log user in"""
+    # Forget any session
+    session.clear()
+
+    # Form is submite
+    if request.method == "POST":
+        bim = request.form.get("bim")
+        pwd = request.form.get("password")
+        # Check variables
+        if not bim:
+            flash('BIM is required!')
+        elif not pwd:
+            flash('Password is required!')
+        else:
+            # Query database for BIM
+            db = get_db_connection()
+            cursor = db.cursor()
+            cursor.execute("SELECT * FROM soldiers WHERE bim = ?", (bim,))
+            rows = cursor.fetchall()
+            cursor.close()
+            if db:
+                db.close()
+
+            # Ensures BIM and password is correct
+            if len(rows) != 1 or not check_password_hash(rows[0]["hash"], pwd):
+                flash("Invalid BIM and/or password")
+
+            else:
+                # Remember session with user_od
+                session["user_id"] = rows[0]["id"]
+                return redirect("/")
+    # GET
+    return render_template("login.html")
+
+
+
 @app.route('/', methods=["POST", "GET"])
 @login_required
 def index():
@@ -50,11 +90,6 @@ def index():
     cursor = db.cursor()
     plates = cursor.execute("SELECT * FROM fleet").fetchall()
     
-    #for row in plates:
-     #   print(row[0])
-      #  print(row.keys())
-       # print(row['km'])
-
     if request.method == "POST":
         user_id = session["user_id"]
         print(user_id)
@@ -64,18 +99,17 @@ def index():
         km_init = request.form.get("km_init")
         km_final = request.form.get("km_final")
         gas = request.form.get("gas")
-
-        # Gestão da data
-        # Não apagar
-        #dt = datetime.strptime(datestring, '%Y-%m-%d')
-        #print(dt.year, dt.month, dt.day)
-        
+     
         # Query for new transport input
         fleet = cursor.execute("SELECT * FROM fleet WHERE plate = ?", (plate,)).fetchall()
-        km_actual = fleet[0]["km"]
-
+        
+        if plate:
+            km_actual = fleet[0]["km"]
+        
         if not plate:
             flash('Plate is required!')
+        elif not datestring:
+            flash('Date is required!')
         elif not km_init:
             flash('Km init is required!')
         elif not km_final:
@@ -132,7 +166,7 @@ def index():
     
     ##################################
     # Table definition
-    transports = db.execute('SELECT * FROM transports WHERE user_id = ? ORDER BY date DESC', (user_id, )).fetchmany(size=5)
+    transports = db.execute('SELECT * FROM transports WHERE user_id = ? ORDER BY date DESC', (user_id, )).fetchmany(size=7)
 
     ##################################
     # Graph definition
@@ -146,18 +180,10 @@ def index():
 
     # 5 Most user vehicles
     # Need to make a circular graph now
-    graph_data_vehicles = cursor.execute('SELECT plate, SUM(plate), SUM(kms) FROM transports WHERE user_id = ? GROUP BY plate', (user_id, )).fetchall()
+    graph_data_vehicles = cursor.execute('SELECT plate, SUM(kms) FROM transports WHERE user_id = ? GROUP BY plate', (user_id, )).fetchall()
     plates_name = [row[0] for row in graph_data_vehicles]
-    plates_count = [row[1] for row in graph_data_vehicles]
-    plates_kms = [row[2] for row in graph_data_vehicles]
+    plates_kms = [row[1] for row in graph_data_vehicles]
     
-
-    ##################################
-    # Totals data
-    # transports_data = db.execute('SELECT COUNT(user_id) as count_id , SUM(kms) as kms FROM transports WHERE user_id = ?', (user_id, )).fetchall()
-    # count_id = transports_data[0]['count_id']
-    # tot_kms = transports_data[0]['kms']
-
     db.close()
 
     return render_template('index.html', plates = plates, transports=transports, months=months, totals_id=totals_id,
@@ -256,188 +282,46 @@ def register():
                 
     return render_template("register.html", ranks = RANKS)
         
-@app.route ("/login", methods=["POST", "GET"])
-def login():
-    """Log user in"""
-    # Forget any BIM
-    session.clear()
-
-    # if form is submite
-    if request.method == "POST":
-        bim = request.form.get("bim")
-        pwd = request.form.get("password")
-        # Check variables
-        if not bim:
-            flash('BIM is required!')
-        elif not pwd:
-            flash('Password is required!')
-        else:
-            # Query database for BIM
-            db = get_db_connection()
-            cursor = db.cursor()
-            cursor.execute("SELECT * FROM soldiers WHERE bim = ?", (bim,))
-            rows = cursor.fetchall()
-            print("Database reading done")
-            print(len(rows))
-            cursor.close()
-            if db:
-                db.close()
-
-            # Ensures BIM and password is correct
-            if len(rows) != 1 or not check_password_hash(rows[0]["hash"], pwd):
-                flash("Invalid BIM and/or password")
-
-            else:
-                # Remember BIM exists and password is correct
-                session["user_id"] = rows[0]["id"]
-                print(rows[0]["id"])
-                return redirect("/")
-
-    return render_template("login.html")
-
 @app.route('/logout')
 def logout():
     session.clear()
     #return redirect("/")
     print("Fez logout")
     # In the end -- render redirect('/')
-    
-    # Query for movements data
-    db = get_db_connection()
-    cursor = db.cursor()
-    graph_data = cursor.execute("SELECT month, SUM(kms), SUM(gas) FROM transports GROUP BY month").fetchall()
+    return render_template("/logout.html")
 
-    # for row in graph_data:
-    #     print(row[0])
-    #     print(row.keys())
-    #     print(row["date"])
-    #     print(row['kms'])
-
-    datas = [row[0] for row in graph_data]
-    distances = [row[1] for row in graph_data]
-    gas = [row[2] for row in graph_data]
-    
-    months = [str_to_month(data) for data in datas]
-
-    print(datas)
-    print(months)
-    print(distances)
-    print(gas)
-
-    #dt = datetime.strptime(datestring, '%Y-%m-%d')
-    #print(dt.year, dt.month, dt.day)
-    
-    # data = [
-    #     ("01-01-2020", 1597),
-    #     ("02-01-2020", 1496),
-    #     ("03-01-2020", 1908),
-    #     ("04-01-2020", 896),
-    #     ("05-01-2020", 755),
-    #     ("06-01-2020", 453),
-    #     ("07-01-2020", 1100),
-    #     ("08-01-2020", 1235),
-    #     ("09-01-2020", 1478),
-    # ]
-
-    # labels = [row[0] for row in data]
-    # values = [row[1] for row in data]
-
-    return render_template("/logout.html", values=distances, labels=months)
-
-@app.route('/consumption')
+@app.route('/consumption', methods=["POST", "GET"])
 @login_required
 def consumption():
     db = get_db_connection()
     cursor = db.cursor()
     
-    transports = cursor.execute('SELECT * FROM transports').fetchall()
     months = cursor.execute("SELECT month FROM transports GROUP BY month").fetchall()
-    # months = [str_to_month(month) for month in months]
+    # months_dt = [data[0] for data in months]
+    # months = [str_to_month(data) for data in months_dt]
 
-
-    db.close()
-    return render_template('consumption.html', months=months, transports=transports)
-
-
-# @app.route('/transports', methods=["POST", "GET"])
-# @login_required
-# def transports():
-#     ''' Transports log '''
-#     # Query database for fleet
-#     db = get_db_connection()
-#     cursor = db.cursor()
-#     plates = cursor.execute("SELECT * FROM fleet").fetchall()
-    
-#     #for row in plates:
-#      #   print(row[0])
-#       #  print(row.keys())
-#        # print(row['km'])
-
-#     if request.method == "POST":
-#         user_id = session["user_id"]
-#         print(user_id)
-#         # Get template data
-#         plate = request.form.get("plate")
-#         datestring = request.form.get("date")
-#         km_init = request.form.get("km_init")
-#         km_final = request.form.get("km_final")
-#         gas = request.form.get("gas")
-
-#         # Gestão da data
-#         # Não apagar
-#         #dt = datetime.strptime(datestring, '%Y-%m-%d')
-#         #print(dt.year, dt.month, dt.day)
+    table_data = cursor.execute('SELECT plate, SUM(kms) as kms, SUM(gas) as gas FROM transports GROUP BY plate').fetchall()
+    plates_name = [row[0] for row in table_data]
+    plates_kms = [int(row[1]) for row in table_data]
+    plates_gas = [int(row[2]) for row in table_data]
         
-#         # Query for fleet data
-#         fleet = cursor.execute("SELECT * FROM fleet WHERE plate = ?", (plate,)).fetchall()
-#         km_actual = fleet[0]["km"]
+    plates_consumption = []
+    for i in range(len(plates_name)):
+        result =  int(plates_gas[i]) * 100 / int(plates_kms[i])
+        plates_consumption.append(result)
 
-#         if not plate:
-#             flash('Plate is required!')
-#         elif not km_init:
-#             flash('Km init is required!')
-#         elif not km_final:
-#             flash('Km final is required!')        
-#         elif not gas:
-#             flash('Gas is required! - If None insert 0')
-#         elif (int(km_init) - int(km_actual)) < 0:
-#             flash('Initial km not valid')
-#         elif (int(km_final) - int(km_init)) < 0:
-#             flash('Final km need to be higher than initial ones')
-#         else:
-#             km_tot = int(km_final) - int(km_init)
-#             # month = calendar.month_name[datetime.strptime(datestring, '%Y-%m-%d').month]
-#             month = datetime.strptime(datestring, '%Y-%m-%d').month
-#             month = '%02d' % month
-#             print(month)
-#             print(type(month))
-            
-#             try:
-#                 user = cursor.execute("SELECT * FROM soldiers WHERE id = ?", (user_id,)).fetchall()            
-#                 first_name = user[0]["first_name"]
-#                 last_name = user[0]['last_name']
-#                 name = first_name + " " + last_name
-#             except sqlite3.Error as error:
-#                 print("Failed to insert data", error)
+    if request.method == 'POST':
+        # long_month_name = request.form.get("month")
+        # datetime_obj = datetime.strptime(long_month_name, "%B")
+        month_number = request.form.get("month")
+        table_data = cursor.execute('SELECT plate, SUM(kms) as kms, SUM(gas) as gas FROM transports WHERE month = ? GROUP BY plate', (month_number, )).fetchall()
+        plates_name = [row[0] for row in table_data]
+        plates_kms = [int(row[1]) for row in table_data]
+        plates_gas = [int(row[2]) for row in table_data]
+        
+        plates_consumption = []
+        for i in range(len(plates_name)):
+            result =  int(plates_gas[i]) * 100 / int(plates_kms[i])
+            plates_consumption.append(result)
 
-#             try:
-#                 cursor.execute('INSERT INTO transports (user_id, date, month, plate, kms, gas, name, bim, rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-#                                 (user_id, datestring, month, plate, km_tot, gas, name, user[0]["bim"], user[0]["rank"], ))
-#                 # Update SQL tables
-#                 cursor.execute("UPDATE fleet SET km = ? WHERE plate = ?", (km_final, plate,))           
-#                 db.commit()
-#                 print("Record inserted successfully", cursor.rowcount) # Isto nem faz sentido pois só insiro uma entrada
-#                 cursor.close()
-#             except sqlite3.Error as error:
-#                 print("Failed to insert data", error)
-#             finally:
-#                 if db:
-#                     db.close()
-#                     print("The db connection is closed")
-#                     return redirect(url_for('index'))
-#                 else:
-#                     redirect('/')
-                    
-#         return redirect('/')
-
-#     return render_template("transports.html", plates = plates)
+    return render_template('consumption.html', months=months, table_data=table_data, plates_consumption=plates_consumption)

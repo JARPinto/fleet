@@ -7,45 +7,72 @@
 {% block head %}
     <script src="/static/chart.min.js"></script>
     <script src="/static/chartjs-plugin-datalabels.min.js"></script>
+
+    <style>
+        form {
+            max-width: 300px;
+            margin: 10px auto;
+            padding: 10px 20px;
+            background: rgba(113, 109, 120, 0.26);
+            border-radius: 8px;
+        }
+        select {
+            height: 40px;
+            border-radius: 4px;
+            border-color: rgba(125, 125, 125, 0.26);
+            width: 100%;
+        }
+        button {
+            padding: 2px 2px 2px 2px;
+            color: #FFF;
+            background-color: grey;
+            font-size: 16px;
+            text-align: center;
+            font-style: normal;
+            border-radius: 4px;
+            height: 40px;
+            width: 100%;
+            border: none;
+            margin-bottom: 10px;
+        }
+
+    </style>
 {% endblock %}
 
 {% block main %}
 {% block content %}
 
-<div class="container text-center">
-    <div class="row">
-        <p class="center">WELCOME</p>
-    </div>
+<div class="container-fluid text-center">
     <div class="row">
         <div class="col-6">
-            <button type="button" class="btn btn-outline-primary btn-lg" disabled> <p> INSERT NEW MOVEMENT </button></p>
-    <form method="POST">
-        <div class="mb-3">
-            <select name="plate">
-                <option disabled selected>Plate</option>
-                {% for plate in plates %}
-                    <option value="{{ plate.plate }}">{{ plate.plate }}</option>
-                {%  endfor %}
-            </select>
-        </div>
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="date" name="date" placeholder="Date" type="date">
-        </div>
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="km_init" name="km_init" placeholder="Km's beginning" type="number">
-        </div>
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="km_final" name="km_final" placeholder="Km's final" type="number">
-        </div>
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="gas" name="gas" placeholder="Fuel (Lts)" type="number">
-        </div>
-        <button class="btn btn-primary" type="submit">Submit</button>
-    </form>
+            <form method="POST">
+                <h4>New transport FORM</h4>
+                <div class="mb-3">
+                    <select name="plate">
+                        <option disabled selected>Plate</option>
+                        {% for plate in plates %}
+                            <option value="{{ plate.plate }}">{{ plate.plate }}</option>
+                        {%  endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control" id="date" name="date" placeholder="Date" type="date">
+                </div>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control" id="km_init" name="km_init" placeholder="Km's beginning" type="number">
+                </div>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control" id="km_final" name="km_final" placeholder="Km's final" type="number">
+                </div>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control" id="gas" name="gas" placeholder="Fuel (Lts)" type="number">
+                </div>
+                <button type="submit">Submit</button>
+            </form>
         </div>
         <div class="col-6">
-            <div class="bd-example">
-                <p><button class="btn btn-outline-success"> Yours last 5 transports </button></p>
+            <div class="bd-example" style="padding-right: 30px;">
+                <h4 style="padding-top: 15px;">Yours last transports</h4>
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -70,13 +97,13 @@
         </div>
     </div>
     <div class="row">
-        <p class="center">LAST LINE</p>
+        <p></p>
     </div>
     <div class="row">
         <div class="col col-md-8">
             <div class="row">
-                <div class="chartBox">
-                    <canvas id="linechart_tot_id" style="width:100%;max-width:1000px" height="220px"></canvas>
+                <div class="chartBox" style="background-color: rgba(218, 228, 227, 0.33); border-radius: 20px; margin-bottom: 5px;">
+                    <canvas id="linechart_tot_id" style="width:100%;" height="220px"></canvas>
                 </div>
                 <script>
                     var ctx_km = document.getElementById("linechart_tot_id").getContext("2d");
@@ -86,7 +113,8 @@
                         data: {
                             labels: {{ months | safe }}, // Safe is for populate
                             datasets: [{
-                                borderColor: "rgb(75, 192, 192)",
+                                backgroundColor: 'rgba(55, 174, 148, 0.81)',
+                                borderColor: "rgba(55, 174, 148, 0.81)",
                                 data: {{ totals_id | safe }},
                                 datalabels: {
                                     align: 'end',
@@ -115,7 +143,7 @@
                                     
                                 },
                                 datalabels: {
-                                    backgroundColor: 'black',
+                                    backgroundColor: 'rgba(55, 174, 148, 0.81)',
                                     borderRadius: 4,
                                     color: 'white',
                                     font: {
@@ -159,8 +187,8 @@
                 </script>
             </div>
             <div class="row">
-                <div class="chartBox">
-                    <canvas id="linechart_kms_id" style="width:100%;max-width:1000px" height="220px"></canvas>
+                <div class="chartBox" style="background-color: rgba(228, 224, 218, 0.33); border-radius: 20px;">
+                    <canvas id="linechart_kms_id" style="width:100%;" height="220px"></canvas>
                 </div>
                 <script>
                     var ctx_km = document.getElementById("linechart_kms_id").getContext("2d");
@@ -170,7 +198,8 @@
                         data: {
                             labels: {{ months | safe }}, // Safe is for populate
                             datasets: [{
-                                borderColor: "rgb(75, 192, 192)",
+                                backgroundColor: 'rgba(90, 67, 19, 0.81)',
+                                borderColor: "rgba(90, 67, 19, 0.81)",
                                 data: {{ kms_id | safe }},
                                 datalabels: {
                                     align: 'end',
@@ -199,7 +228,7 @@
                                     
                                 },
                                 datalabels: {
-                                    backgroundColor: 'black',
+                                    backgroundColor: 'rgba(90, 67, 19, 0.81)',
                                     borderRadius: 4,
                                     color: 'white',
                                     font: {
@@ -245,7 +274,7 @@
         </div>
         <div class="col col-md-4">
             <div class="chartBox">
-                <canvas id="doughnut" style="width:100%;max-width:500px" height="400px"></canvas>
+                <canvas id="doughnut" style="width:100%;max-width:500px;height:100%;max-height: 300px;"></canvas>
             </div>
             <script>
                 var ctx_km = document.getElementById("doughnut").getContext("2d");
@@ -258,22 +287,22 @@
                             data: {{ plates_kms | safe }},
                             // borderColor: "black",
                             backgroundColor: [
-                                'rgba(255, 99, 132, 0.5)',
-                                'rgba(54, 162, 235, 0.2)',
-                                'rgba(255, 206, 86, 0.2)',
-                                'rgba(75, 192, 192, 0.2)',
-                                'rgba(129, 206, 150, 0.2)',
+                                '#47406B',
+                                '#DAD6EE',
+                                '#9A8CEB',
+                                '#62606B',
+                                '#796EB8',
                             ],
                             borderColor: [
-                                'rgba(255,99,132,1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(129, 206, 150, 1)',
+                                '#47406B',
+                                '#DAD6EE',
+                                '#9A8CEB',
+                                '#62606B',
+                                '#796EB8',
                             ],
                             datalabels: {
-                                align: '',
-                                anchor: '',
+                                align: 'top',
+                                anchor: 'end',
                             }
                         }]
                     },
@@ -284,12 +313,13 @@
                             legend: {
                                 display: true,
                                 position: 'bottom', 
+                                align: 'center'
                             },
                             title: {
                                 display: true,
                                 text: 'Your top 5 vehicles (kms)',
                                 position: 'top',
-                                align: 'start',
+                                align: 'center',
                                 fullSize: 'false',
                                 color: 'rgb(0,0,0)',
                                 font: {
@@ -299,14 +329,13 @@
                                 
                             },
                             datalabels: {
-                                backgroundColor: 'black',
+                                backgroundColor: '#472C6B',
                                 borderRadius: 4,
                                 color: 'white',
                                 font: {
-                                    weight: 'bold'
+                                    size: 12
                                 },
                                 formatter: Math.round,
-                                padding: 6
                             }
                         },
                         // Core options
@@ -321,8 +350,6 @@
         </div>
     </div>
 </div>
-
-<p>Aqui jaz index</p>
 
 {% endblock %}
 {% endblock %}
