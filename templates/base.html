@@ -5,9 +5,9 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="initial-scale=1, width=device-width">
-        <link rel="stylesheet" href="/static/bootstrap.min.css">
-        <link rel="stylesheet" href="/static/style.css" >
-        <script src="/static/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/css/style.css" >
+        <script src="/static/js/bootstrap.min.js"></script>
         {% block head %}{% endblock %}
         <title>Fleet Managment: {% block title %}{% endblock %}</title>
 
@@ -55,9 +55,10 @@
             <!-- </header> -->
         {% endif %}
 
-        <div class="container-fluid py-5 text-center">
+        <!-- <div class="container-fluid py-5 text-center"> -->
             {% block main %}{% endblock %}
-        </div>
+        <!-- </div> -->
+        
         <footer class="footer mt-auto py-3 bg-light">
           <div class="container">
               <span class="text-muted">Project by José Pinto</span>

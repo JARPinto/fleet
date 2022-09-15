@@ -5,8 +5,8 @@
 {% endblock %}
 
 {% block head %}
-    <script src="/static/chart.min.js"></script>
-    <script src="/static/chartjs-plugin-datalabels.min.js"></script>
+    <script src="/static/js/chart.min.js"></script>
+    <script src="/static/js/chartjs-plugin-datalabels.min.js"></script>
 
     <style>
         form {
@@ -100,7 +100,7 @@
     <div class="row">
         <p></p>
     </div>
-    <div class="row">
+    <div class="row" style="padding-left: 30px;">
         <div class="col col-md-8">
             <div class="row">
                 <div class="chartBox" style="background-color: rgba(218, 228, 227, 0.33); border-radius: 20px; margin-bottom: 5px;">
@@ -344,10 +344,6 @@
                     }
                 });
         </script>
-        </div>
-        <div class="position-sticky" style="top: 2rem;">
-            <!-- <h1> Number os Transports</h1> -->
-            
         </div>
     </div>
     {% endif %}

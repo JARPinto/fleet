@@ -1,7 +1,17 @@
 <!-- Isto é para desaparecer depois -->
 {% extends "base.html" %}
 
-{% block head %}{% endblock %}
+{% block head %}
+    <style>
+        form {
+            max-width: 300px;
+            margin: 10px auto;
+            padding: 10px 20px;
+            background: rgba(172, 153, 206, 0.26);
+            border-radius: 8px;
+        }
+    </style>
+{% endblock %}
 
 {% block title %}
     Log In
@@ -9,8 +19,7 @@
 
 {% block main %}
 {% block content %}
-<p> LOGOUT DONE !!! </p>
-    <div>
+    <div class="container-fluid text-center" style="padding-top: 20px;">
     <form method="POST">
         <div class="mb-3">
             <select name="month">
@@ -23,7 +32,7 @@
     </div>
     </form>
     <p></p>
-        <div class="container-md">
+        <div class="container-fluid text-center" style="padding: 10px 10px 5px 20px; ">
             <div class="col col-md-6">
                 <table class="table table-striped">
                     <thead>

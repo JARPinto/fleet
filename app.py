@@ -14,6 +14,7 @@ from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 import calendar
+import numpy
 
 from helpers import login_required, str_to_month
 
@@ -307,8 +308,11 @@ def consumption():
         
     plates_consumption = []
     for i in range(len(plates_name)):
-        result =  int(plates_gas[i]) * 100 / int(plates_kms[i])
+        result =  "{:.1f}".format(int(plates_gas[i]) * 100 / int(plates_kms[i]))
         plates_consumption.append(result)
+    print(plates_consumption)
+    print(type(plates_consumption))
+    print(type(plates_kms))
 
     if request.method == 'POST':
         # long_month_name = request.form.get("month")

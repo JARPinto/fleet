@@ -24,15 +24,18 @@
 
 {% block main %}
 {% block content %}
-    <form method="POST">
-        <h4 style="padding: 10px 5px;">Sign In</h4>
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="BIM" name="bim" placeholder="BIM" type="text">
-        </div>
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="password">
-        </div>
-        <button class="btn btn-success" type="submit">Log In</button>
-    </form>
+    <div class="text-center" style="padding-top: 20px">
+        <form method="POST">
+            <h4 style="padding: 10px 5px;">Sign In</h4>
+            <div class="mb-3">
+                <input autocomplete="off" autofocus class="form-control" id="BIM" name="bim" placeholder="BIM" type="text">
+            </div>
+            <div class="mb-3">
+                <input autocomplete="off" autofocus class="form-control" id="password" name="password" placeholder="Password" type="password">
+            </div>
+            <button class="btn btn-success" type="submit">Sign In</button>
+        </form>
+    </div>
+
 {% endblock %}
 {% endblock %}
