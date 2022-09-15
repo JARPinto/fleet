@@ -14,7 +14,6 @@
     <form method="POST">
         <div class="mb-3">
             <select name="month">
-                <option disabled selected>Month</option>
                 {% for month in months %}
                     <option value="{{ month.month }}">{{ month.month }}</option>
                 {%  endfor %}

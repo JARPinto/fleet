@@ -14,7 +14,8 @@
     </head>
 
     <body>
-        <nav class="bg-light border navbar navbar-expand-md navbar-light position-sticky">
+        <main>
+        <nav class="bg-light border navbar navbar-expand-md navbar-light fixed-top">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/"><span class="brown">Fleet</span><span class="green">Managment</span></a>
                 <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
@@ -47,25 +48,24 @@
         </nav>
 
         {% if get_flashed_messages() %}
-            <header>
+           <!-- <header> -->
                 <div class="alert alert-primary mb-0 text-center" role="alert">
                     {{ get_flashed_messages() | join(" ") }}
                 </div>
-            </header>
+            <!-- </header> -->
         {% endif %}
 
-        <main class="container-fluid py-5 text-center">
+        <div class="container-fluid py-5 text-center">
             {% block main %}{% endblock %}
-        </main>
+        </div>
         <footer class="footer mt-auto py-3 bg-light">
-            <div class="container">
+          <div class="container">
               <span class="text-muted">Project by José Pinto</span>
-            </div>
-          </footer>
+          </div>
+        </footer>
         <!-- <footer class="mb-5 small text-center text-muted">
             Project by José Pinto</a>
         </footer> -->
-
+        </main>
     </body>
-
 </html>

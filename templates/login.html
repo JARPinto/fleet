@@ -4,18 +4,35 @@
     Log In
 {% endblock %}
 
-{% block head %}{% endblock %}
+{% block head %}
+    <style>
+        form {
+            max-width: 300px;
+            margin: auto;
+            padding: 10px 20px;
+            background: #9e999156;
+            border-radius: 8px;
+        }
+        select {
+            height: 40px;
+            border-radius: 4px;
+            border-color: rgba(125, 125, 125, 0.26);
+            width: 100%;
+        }
+    </style>
+{% endblock %}
 
 {% block main %}
 {% block content %}
     <form method="POST">
+        <h4 style="padding: 10px 5px;">Sign In</h4>
         <div class="mb-3">
             <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="BIM" name="bim" placeholder="BIM" type="text">
         </div>
         <div class="mb-3">
             <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="password">
         </div>
-        <button class="btn btn-primary" type="submit">Log In</button>
+        <button class="btn btn-success" type="submit">Log In</button>
     </form>
 {% endblock %}
 {% endblock %}
