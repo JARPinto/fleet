@@ -2,6 +2,9 @@
 {% extends "base.html" %}
 
 {% block head %}
+    <script src="/static/js/chart.min.js"></script>
+    <script src="/static/js/chartjs-plugin-datalabels.min.js"></script>
+
     <style>
         form {
             max-width: 300px;
@@ -20,20 +23,21 @@
 {% block main %}
 {% block content %}
     <div class="container-fluid text-center" style="padding-top: 20px;">
-    <form method="POST">
-        <div class="mb-3">
-            <select name="month">
-                {% for month in months %}
-                    <option value="{{ month.month }}">{{ month.month }}</option>
-                {%  endfor %}
-            </select>
-        </div>
-        <button class="btn btn-primary" type="submit">Submit</button>
+        <form method="POST">
+            <div class="mb-3">
+                <select name="month">
+                    {% for month in months %}
+                        <option value="{{ month }}">{{ month }}</option>
+                    {%  endfor %}
+                </select>
+            </div>
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </form>
     </div>
-    </form>
-    <p></p>
-        <div class="container-fluid text-center" style="padding: 10px 10px 5px 20px; ">
-            <div class="col col-md-6">
+    <div><p></p></div>
+    <div class="container-fluid text-center" style="padding-left: 20px; padding-right: 40px;">
+        <div class="row">
+            <div class="col col-md-4">
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -53,7 +57,78 @@
                     </tbody>
                 </table>
             </div>
-            
+            <div class="col col-md-8">
+                <!-- Bar Graph for vehicles consumption -->
+                <div class="chartBox">
+                    <canvas id="bar" style="width:100%;max-width:800px; height:100%; max-height: 800px;"></canvas>
+                </div>
+                <script>
+                    var ctx_km = document.getElementById("bar").getContext("2d");
+                    var linechart = new Chart(ctx_km, {
+                        type: 'bar',
+                        // Data options
+                        data: {
+                            labels: {{ plates | safe }}, // Safe is for populate
+                            datasets: [{
+                                data: {{ consumption | safe }},
+                                // borderColor: "black",
+                                backgroundColor: '#D99011',
+                                borderColor: '#D99011',
+                                hoverBackgroundColor: '#B35900',
+                                borderRadius: 10,
+                                datalabels: {
+                                    align: 'center',
+                                    anchor: '',
+                                }
+                            }]
+                        },
+                        plugins: [ChartDataLabels],
+                        options: {
+                            responsive: true,
+                            plugins: {legend: {display: false},
+                                title: {
+                                    display: true,
+                                    text: 'Consumption (Lt / 100km)',
+                                    position: 'top',
+                                    align: 'center',
+                                    fullSize: 'false',
+                                    color: 'rgb(0,0,0)',
+                                    font: {
+                                        weight: 'bold',
+                                        size: 20
+                                    }
+                                    
+                                },
+                                datalabels: {
+                                    backgroundColor: '#8C5900',
+                                    borderRadius: 4,
+                                    color: 'white',
+                                    font: {
+                                        size: 12
+                                    },
+                                    formatter: Math.round,
+                                },
+                                
+                            },
+                            // Core options
+                            // maintainAspectRatio: false,
+                            indexAxis: 'y',
+                            scales: {
+                                    x: {
+                                        grid: {
+                                        display: false
+                                        }
+                                    },
+                                    y: {
+                                        grid: {
+                                        display: false
+                                        }
+                                    }
+                            },
+                        }
+                    });
+                </script>
+            </div>
         </div>
     </div>
     

@@ -298,34 +298,44 @@ def consumption():
     cursor = db.cursor()
     
     months = cursor.execute("SELECT month FROM transports GROUP BY month").fetchall()
-    # months_dt = [data[0] for data in months]
-    # months = [str_to_month(data) for data in months_dt]
+    months_dt = [data[0] for data in months]
+    months = [str_to_month(data) for data in months_dt]
 
     table_data = cursor.execute('SELECT plate, SUM(kms) as kms, SUM(gas) as gas FROM transports GROUP BY plate').fetchall()
     plates_name = [row[0] for row in table_data]
     plates_kms = [int(row[1]) for row in table_data]
     plates_gas = [int(row[2]) for row in table_data]
-        
+    
+    # Populates vehicles consumption
     plates_consumption = []
     for i in range(len(plates_name)):
         result =  "{:.1f}".format(int(plates_gas[i]) * 100 / int(plates_kms[i]))
-        plates_consumption.append(result)
-    print(plates_consumption)
-    print(type(plates_consumption))
-    print(type(plates_kms))
+        plates_consumption.append(float(result))
 
+    print(plates_name)
+    print(plates_consumption)
+        
     if request.method == 'POST':
-        # long_month_name = request.form.get("month")
-        # datetime_obj = datetime.strptime(long_month_name, "%B")
-        month_number = request.form.get("month")
-        table_data = cursor.execute('SELECT plate, SUM(kms) as kms, SUM(gas) as gas FROM transports WHERE month = ? GROUP BY plate', (month_number, )).fetchall()
+        # Get month name and convert to str with 2digit
+        month_name = request.form.get("month")
+        month_number = datetime.strptime(month_name, '%B').month
+        month_tdig = '{:02d}'.format(month_number)
+        
+        # Same table with filter option
+        table_data = cursor.execute('SELECT plate, SUM(kms) as kms, SUM(gas) as gas FROM transports WHERE month=? GROUP BY plate', (month_tdig,)).fetchall()
         plates_name = [row[0] for row in table_data]
         plates_kms = [int(row[1]) for row in table_data]
         plates_gas = [int(row[2]) for row in table_data]
         
+        # Populates vehicles consumption
         plates_consumption = []
         for i in range(len(plates_name)):
-            result =  int(plates_gas[i]) * 100 / int(plates_kms[i])
-            plates_consumption.append(result)
+            result =  "{:.1f}".format(int(plates_gas[i]) * 100 / int(plates_kms[i]))
+            plates_consumption.append(float(result))
 
-    return render_template('consumption.html', months=months, table_data=table_data, plates_consumption=plates_consumption)
+        print(plates_name)
+        print(plates_consumption)
+
+        return render_template('consumption.html', month_name=month_name, months=months, table_data=table_data, consumption=plates_consumption, plates=plates_name)
+
+    return render_template('consumption.html', month_name="All YEAR stats", months=months, table_data=table_data, consumption=plates_consumption, plates=plates_name)
