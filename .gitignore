@@ -1,2 +1,2 @@
 __pycache__/
-fleet/flask_session/
+flask_session/*
