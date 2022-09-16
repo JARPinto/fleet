@@ -338,4 +338,12 @@ def consumption():
 
         return render_template('consumption.html', month_name=month_name, months=months, table_data=table_data, consumption=plates_consumption, plates=plates_name)
 
-    return render_template('consumption.html', month_name="All YEAR stats", months=months, table_data=table_data, consumption=plates_consumption, plates=plates_name)
+    return render_template('consumption.html', month_name="All YEAR", months=months, table_data=table_data, consumption=plates_consumption, plates=plates_name)
+
+@app.route('/fleet', methods=["POST", "GET"])
+@login_required
+def fleet():
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    return render_template('fleet.html')
