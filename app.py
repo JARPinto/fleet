@@ -49,7 +49,7 @@ def login():
     # Forget any session
     session.clear()
 
-    # Form is submite
+    # Form submited
     if request.method == "POST":
         bim = request.form.get("bim")
         pwd = request.form.get("password")
@@ -181,7 +181,7 @@ def index():
 
     # 5 Most user vehicles
     # Need to make a circular graph now
-    graph_data_vehicles = cursor.execute('SELECT plate, SUM(kms) FROM transports WHERE user_id = ? GROUP BY plate', (user_id, )).fetchall()
+    graph_data_vehicles = cursor.execute('SELECT plate, SUM(kms) FROM transports WHERE user_id = ? GROUP BY plate', (user_id, )).fetchmany(5)
     plates_name = [row[0] for row in graph_data_vehicles]
     plates_kms = [row[1] for row in graph_data_vehicles]
     
@@ -345,5 +345,14 @@ def consumption():
 def fleet():
     db = get_db_connection()
     cursor = db.cursor()
+    fleets = cursor.execute('SELECT * FROM fleet').fetchall()
 
-    return render_template('fleet.html')
+    types = cursor.execute('SELECT type, COUNT(type), SUM(km) FROM fleet GROUP by type').fetchall()
+    type_name = [row[0] for row in types]
+    type_count = [row[1] for row in types]
+
+    brands = cursor.execute('SELECT brand, COUNT(brand), SUM(km) FROM fleet GROUP by brand').fetchall()
+    brand_name = [row[0] for row in brands]
+    brand_count = [row[1] for row in brands]
+
+    return render_template('fleet.html', fleets=fleets, type_name=type_name, type_count=type_count, brand_name=brand_name, brand_count=brand_count)

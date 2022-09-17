@@ -1,13 +1,194 @@
-<!-- Isto é para desaparecer depois -->
 {% extends "base.html" %}
 
-{% block head %}{% endblock %}
+{% block head %}
+    <!-- To use the chartjs -->
+    <script src="/static/js/chart.min.js"></script>
+    <script src="/static/js/chartjs-plugin-datalabels.min.js"></script>
+{% endblock %}
 
 {% block title %}
     Fleet
 {% endblock %}
 
 {% block main %}
+    <div class="container-fluid text-center" style="padding-top: 15px; padding-bottom: 15px;">
+        <div class="row text-center">
+            <h3>Fleet Vehicles</h3>
+        </div>
+        <div class="row">
+        <!-- Divide in two equal parts-->
+            <div class="col col-md-6">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>       
+                            <th scope="col">Plate</th>       
+                            <th scope="col">Brand</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Actual km</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fleet in fleets %}
+                            <tr>
+                                <td scope="row">{{ fleet['id'] }}</td>
+                                <td>{{ fleet['plate'] }}</td>
+                                <td>{{ fleet['brand'] }} </td>
+                                <td>{{ fleet['type'] }} </td>
+                                <td>{{ fleet['km'] }} </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- Second equal part -->
+            <div class="col col-md-6">
+                <!-- Sticky to mantain place after scrolling down -->
+                <div class="position-sticky" style="top: 5rem;">
+                    <!-- 1 of 3 rows -->
+                    <div class="row">
+                        <div class="chartBox">
+                            <canvas id="bar_number" style="width:100%;max-width:800px;height:100%;max-height: 300px;"></canvas>
+                        </div>
+                        <script>
+                            var ctx_km = document.getElementById("bar_number").getContext("2d");
+                            var linechart = new Chart(ctx_km, {
+                                type: 'bar',
+                                // Data options
+                                data: {
+                                    labels: {{ type_name | safe }}, // Safe is for populate
+                                    datasets: [{
+                                        data: {{ type_count | safe }},
+                                        // borderColor: "black",
+                                        backgroundColor: '#F7B66D',
+                                        borderColor: '#F7B66D',
+                                        hoverBackgroundColor: '#786959',
+                                        barPercentage: 0.5,
+                                        borderRadius: 10,
+                                        datalabels: {
+                                            align: 'center',
+                                            anchor: '',
+                                        }
+                                    }]
+                                },
+                                plugins: [ChartDataLabels],
+                                options: {
+                                    responsive: true,
+                                    plugins: {legend: {display: false},
+                                        title: {
+                                            display: true,
+                                            text: 'Nº Vehicles by Type',
+                                            position: 'top',
+                                            align: 'center',
+                                            fullSize: 'false',
+                                            color: 'rgb(0,0,0)',
+                                            font: {
+                                                weight: 'bold',
+                                                size: 20
+                                            }
+                                            
+                                        },
+                                        datalabels: {
+                                            backgroundColor: '#F7B66D',
+                                            borderRadius: 4,
+                                            color: 'black',
+                                            font: {
+                                                weight: 'bold',
+                                                size: 12
+                                            },
+                                            formatter: Math.round,
+                                        },
+                                        
+                                    },
+                                    // Core options
+                                    aspectRatio: 1,
+                                    scales: {
+                                            x: {
+                                                grid: {
+                                                display: false,
+                                                stacked: true}
+                                            },
+                                            y: {
+                                                grid: {
+                                                display: true,
+                                                stacked: true
+                                                }
+                                            }
+                                    },
+                                }
+                            });
+                        </script>
+                    </div>
+
+                    <!-- 2 of 3 rows -->
+                    <div class="row text-center" style="padding-top: 10px; padding-bottom: 10px;">
+                        <h6>Dump Truck, HL: Hook & Lift, HV: Heavy Vehicle, LP: Logistic Platform, LV: Light Vehicle, T: Tractor</h6> 
+                    </div>
+                    
+                    <!-- 3 of 3 rows -->
+                    <div class="row" style="padding-top: 10px;">
+                        <div class="chartBox">
+                            <canvas id="bar_brand" style="width:100%;max-width:800px;height:100%;max-height: 300px;"></canvas>
+                        </div>
+                        <script>
+                            var ctx_km = document.getElementById("bar_brand").getContext("2d");
+                            var linechart = new Chart(ctx_km, {
+                                type: 'bar',
+                                // Data options
+                                data: {
+                                    labels: {{ brand_name | safe }}, // Safe is for populate
+                                    datasets: [{
+                                        data: {{ brand_count | safe }},
+                                        backgroundColor: '#C48F56',
+                                        borderColor: '#C48F56',
+                                        hoverBackgroundColor: '#786959',
+                                        barPercentage: 0.5,
+                                        borderRadius: 10,
+                                        datalabels: {
+                                            align: 'center',
+                                            anchor: '',
+                                        }
+                                    }]
+                                },
+                                plugins: [ChartDataLabels],
+                                options: {
+                                    responsive: true,
+                                    plugins: {legend: {display: false},
+                                        title: {
+                                            display: true,
+                                            text: 'Nº Vehicles by Brand',
+                                            position: 'top',
+                                            align: 'center',
+                                            fullSize: 'false',
+                                            color: 'rgb(0,0,0)',
+                                            font: {
+                                                weight: 'bold',
+                                                size: 20
+                                            }
+                                        },
+                                        datalabels: {
+                                            backgroundColor: '#C48F56',
+                                            borderRadius: 4,
+                                            offset: 10,
+                                            color: 'black',
+                                            font: {
+                                                weight: 'bold',
+                                                size: 12
+                                            },
+                                            formatter: Math.round,
+                                        },
+                                        
+                                    },
+                                    // Core options
+                                    aspectRatio: 1,
+                                    scales: {x: {grid: {display: false}}},
+                                }
+                            });
+                        </script>
+                    </div> 
+                </div>      
+        </div> 
+
 {% block content %}
     
 {% endblock %}
