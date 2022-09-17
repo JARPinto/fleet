@@ -22,8 +22,11 @@
 
 {% block main %}
 {% block content %}
+    <!-- Grid row 1-->
     <div class="row align-content-center" style="padding-top: 20px;">
+        <!-- Grid column Left -->
         <div class="col col-md-4 text-center">
+            <!-- Content -- FORM-->
             <h4> Filter option </h4>
             <form method="POST">
                 <div class="mb-3">
@@ -35,15 +38,26 @@
                 </div>
                 <button class="btn btn-success" type="submit">Submit</button>
             </form>
+            <!-- Content -- FORM-->
         </div>
+        <!-- Grid column Left -->
+
+        <!-- Grid column Right -->
         <div class="col col-md-8 text-center">
             <h1>{{ month_name }} Stats </h1>
         </div>
+        <!-- Grid column Right -->
     </div>
-    <!-- Second Part -->
+    <!-- Grid row 1-->
+
+
+    <!-- Container for Second Part -->
     <div class="container-fluid text-center" style="padding-left: 40px; padding-right: 20px;">
+        <!-- Grid row 2-->
         <div class="row align-content-center">
+            <!-- Grid column Left -->
             <div class="col col-md-4">
+                <!-- Content - Table -->
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -62,10 +76,15 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                <!-- Content - Table -->
             </div>
+            <!-- Grid column Left -->
+
+            <!-- Grid column Right -->
             <div class="col col-md-8">
-                <!-- JERE -->
+                <!-- Sticky position - keep while scroll -->
                 <div class="position-sticky" style="top: 5rem;">
+                    <!-- Content - Bar chart -->
                     <div class="chartBox">
                         <canvas id="bar" style="width:100%;max-width:800px; height:100%; max-height: 600px;"></canvas>
                     </div>
@@ -73,12 +92,11 @@
                         var ctx_km = document.getElementById("bar").getContext("2d");
                         var linechart = new Chart(ctx_km, {
                             type: 'bar',
-                            // Data options
+                            // Data
                             data: {
                                 labels: {{ plates | safe }}, // Safe is for populate
                                 datasets: [{
                                     data: {{ consumption | safe }},
-                                    // borderColor: "black",
                                     backgroundColor: '#D99011',
                                     borderColor: '#D99011',
                                     hoverBackgroundColor: '#B35900',
@@ -90,7 +108,10 @@
                                     }
                                 }]
                             },
+                            // Data
+                            // Chartjs plugin to datalabels
                             plugins: [ChartDataLabels],
+                            // Options
                             options: {
                                 responsive: true,
                                 plugins: {legend: {display: false},
@@ -124,20 +145,24 @@
                                 scales: {
                                         x: {
                                             grid: {
-                                            display: false,
-                                            stacked: false}
+                                                display: false,
+                                                stacked: false
+                                            }
                                         },
                                         y: {grid: {display: false}}
                                 },
                             }
+                            // Options
                         });
                     </script>
+                    <!-- Content - Bar chart -->
                 </div>
-                <!-- Bar Graph for vehicles consumption -->
+                <!-- Sticky position - keep while scroll -->
             </div>
         </div>
+        <!-- Grid row 2-->
     </div>
-    
+    <!-- Container for Second Part -->  
 
 {% endblock %}
 {% endblock %}

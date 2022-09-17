@@ -1,4 +1,3 @@
-<!-- Isto é para desaparecer depois -->
 {% extends "base.html" %}
 
 {% block head %}
@@ -10,37 +9,42 @@
 
 {% block main %}
 {% block content %}
+    <!-- Container -->
     <div class="container-md" style="position:sticky; padding-top: 20px; align-content: center;">
-    <h1 style="position: center;"> History of inputs</h1>
-    <div class="bd-example">
-        <table class="table table-striped text-center">
-            <thead>
-                <tr class="white">
-                    <th scope="col">#</th>       
-                    <th scope="col">Rank</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Vehicle</th>
-                    <th scope="col">Distance</th>
-                    <th scope="col">Fuel</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for transport in transports %}
-                    <tr>
-                        <td scope="row">{{ transport['id'] }}</td>
-                        <td>{{ transport['rank'] }}</td>
-                        <td>{{ transport['name'] }}</td>
-                        <td>{{ transport['date'] }}</td>
-                        <td>{{ transport['plate'] }}</td>
-                        <td>{{ transport['kms'] }} km</td>
-                        <td>{{ transport['gas'] }} L</td>
+        <!-- Content -->
+        <h1 style="position: center;"> History of inputs</h1>
+        <!-- Content - Table -->
+        <div class="bd-example">
+            <table class="table table-striped text-center">
+                <thead>
+                    <tr class="white">
+                        <th scope="col">#</th>       
+                        <th scope="col">Rank</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Vehicle</th>
+                        <th scope="col">Distance</th>
+                        <th scope="col">Fuel</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for transport in transports %}
+                        <tr>
+                            <td scope="row">{{ transport['id'] }}</td>
+                            <td>{{ transport['rank'] }}</td>
+                            <td>{{ transport['name'] }}</td>
+                            <td>{{ transport['date'] }}</td>
+                            <td>{{ transport['plate'] }}</td>
+                            <td>{{ transport['kms'] }} km</td>
+                            <td>{{ transport['gas'] }} L</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- Content - Table -->
     </div>
-    </div>
+    <!-- Container -->
 
 {% endblock %}
 {% endblock %}

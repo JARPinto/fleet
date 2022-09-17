@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="/static/css/bootstrap.min.css">
         <link rel="stylesheet" href="/static/css/style.css" >
         <script src="/static/js/bootstrap.min.js"></script>
+        
         {% block head %}{% endblock %}
         
         <title>Fleet Managment: {% block title %}{% endblock %}</title>
@@ -17,7 +18,9 @@
 
     <body>
         <main>
+        <!-- Navbar -->
         <nav class="bg-light border navbar navbar-expand-md navbar-light fixed-top">
+            <!-- Navbar Container -->
             <div class="container-fluid">
                 <a class="navbar-brand" href="/"><span class="brown">Fleet</span><span class="green">Managment</span></a>
                 <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
@@ -30,10 +33,6 @@
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('consumption') }}">Consumption</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('fleet') }}">Fleet</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('history') }}">History</a></li>
-                            <!-- This will work later when admin accounts -->
-                            <!-- {# {% if session["user_id"] == 1 %}
-                                <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a></li>
-                            {% endif %} #} -->
                         </ul>
                         <ul class="navbar-nav ms-auto mt-2">
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Log Out</a></li>
@@ -46,13 +45,15 @@
                     {% endif %}
                 </div>
             </div>
+            <!-- Navbar Container -->
         </nav>
+        <!-- Navbar -->
 
         {% if get_flashed_messages() %}
            <!-- <header> -->
-                <div class="alert alert-primary mb-0 text-center" role="alert">
-                    {{ get_flashed_messages() | join(" ") }}
-                </div>
+            <div class="alert alert-primary mb-0 text-center" role="alert">
+                {{ get_flashed_messages() | join(" ") }}
+            </div>
             <!-- </header> -->
         {% endif %}
 
@@ -61,7 +62,7 @@
         <!-- Copyright -->
         <footer class="footer fixed-bottom mt-auto p-md-3 text-center bg-light">
             © 2022 Copyright:
-            <a class="text-reset fw-bold" href="www.linkedin.com/in/jarpinto">José Pinto</a>
+            <a class="text-reset" href="www.linkedin.com/in/jarpinto">José Pinto</a>
         </footer>
         <!-- Copyright -->
 
