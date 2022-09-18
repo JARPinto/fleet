@@ -71,23 +71,23 @@ Static Folder as 03 subfolders:
       - chartjs-plugin-datalabels.min.js (https://github.com/chartjs/chartjs-plugin-datalabels/releases/tag/v2.1.0)
       
 Database explanation:
-  - "soldiers", saves id (autoincrement),
-                      bim - number of identity, 
-                      hash - saves the hashed password, 
-                      first_name and last_name saves First and Last name,
-                      rank saves the user rank
+  - "soldiers", id (autoincrement),
+                bim - number of identity, 
+                hash - saves the hashed password, 
+                first_name and last_name saves First and Last name,
+                rank saves the user rank
  
-  - "fleet", saves id (autoincrement),
-                      plate - vehicle lisence plate, 
-                      brand - vehicle brand, 
-                      type - vehicle type, 
-                      km - vehicle actual km
+  - "fleet", id (autoincrement),
+             plate - vehicle lisence plate, 
+             brand - vehicle brand, 
+             type - vehicle type, 
+             km - vehicle actual km
 
-  - "transports", saves id (autoincrement),
-                        plate - vehicle lisence plate, 
-                        brand - vehicle brand, 
-                        type - vehicle type, 
-                        km - vehicle actual km
+  - "transports", id (autoincrement),
+                  plate - vehicle lisence plate, 
+                  brand - vehicle brand, 
+                  type - vehicle type, 
+                  km - vehicle actual km
                       
 
 Templates folder as 08 html file:

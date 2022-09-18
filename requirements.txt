@@ -1,0 +1,10 @@
+python3
+datetime
+calendar
+Flask
+Flask-Session
+requests
+sqlite3
+bootstrap
+chartjs
+chartjs-plugin-datalabels

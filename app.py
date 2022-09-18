@@ -1,20 +1,8 @@
-# from __future__ import print_function
-# from cgi import test
-# from crypt import methods
-# from functools import reduce
-# from operator import le
-# from pprint import pprint
-# import re
 import sqlite3
-# from string import punctuation
-# from turtle import distance
-# from xml.sax.handler import feature_external_ges
 from flask import Flask, render_template, request, url_for, flash, redirect, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
-# import calendar
-# import numpy
 
 from helpers import login_required, str_to_month
 
