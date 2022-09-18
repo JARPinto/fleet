@@ -10,16 +10,17 @@ The driver can register a trip, acess his last trips and charts with summary of 
 * [Project Summary](#your-project-title)
 * [Technologies Used](#technologies-used)
 * [Documentation](#documentation)
+* [Setup](#setup)
+* [Database](#database)
 * [Features](#features)
 * [Screenshots](#screenshots)
-* [Setup](#setup)
 * [Usage](#usage)
 * [Project Status](#project-status)
 * [Room for Improvement](#room-for-improvement)
 * [Acknowledgements](#acknowledgements)
 * [Contact](#contact)
-<!-- * [License](#license) -->
 
+  
 ## Technologies Used
 - Python v3.10.4
 - Flask 2.2.2
@@ -37,6 +38,34 @@ The driver can register a trip, acess his last trips and charts with summary of 
 - chartjs-plugin-datalabels: https://master--chartjs-plugin-datalabels.netlify.app/
 - sqlite3: https://www.sqlite.org/docs.html
 
+## Setup
+In requirements.txt: 
+>python3; datetime; calendar; Flask; Flask-Session; requests; sqlite3; bootstrap; chartjs; chartjs-plugin-datalabels
+
+## Database
+- soldiers
+  - id (autoincrement)
+  - bim, number of identity
+  - hash - saves the hashed password
+  - first_name and last_name saves First and Last name
+  - rank saves the user rank
+- fleet
+  - id (autoincrement)
+  - plate, vehicle lisence plate
+  - brand, vehicle brand
+  - type, vehicle type
+  - km, vehicle actual km
+- transports
+  - id (autoincrement)
+  - user_id, unique value from session
+  - plate, vehicle lisence plate
+  - km, distance done in the trip
+  - gas, fuel added after trip
+  - name | bim | rank, user data
+  - date, day of trip
+  - month, takes de month from date with 02 digits
+                      
+  
 ## Features
 - Log in
 - Register
@@ -52,59 +81,14 @@ The driver can register a trip, acess his last trips and charts with summary of 
 - Logout
 
 
-
-This application is divided in 5 structural points:
-Static Folder
-Templates Folder
-App.py
-database.db 
-Requirements.txt - needs no introduction, basically shows the requirements to run the application
-
-Static Folder as 03 subfolders:
-  - css: contains 02 css files
-      - bootstrap.min.css (https://getbootstrap.com/docs/5.2/getting-started/download/)
-      - style.cc (definition of body and navbar style)
-  - fig: contains 03 figures to use on the web app
-  - js: contains 03 js files
-      - bootstrap.min.js (https://getbootstrap.com/docs/5.2/getting-started/download/)
-      - chart.min.js (https://www.chartjs.org/docs/latest/getting-started/installation.html)
-      - chartjs-plugin-datalabels.min.js (https://github.com/chartjs/chartjs-plugin-datalabels/releases/tag/v2.1.0)
-      
-Database explanation:
-  - "soldiers", id (autoincrement),
-                bim - number of identity, 
-                hash - saves the hashed password, 
-                first_name and last_name saves First and Last name,
-                rank saves the user rank
- 
-  - "fleet", id (autoincrement),
-             plate - vehicle lisence plate, 
-             brand - vehicle brand, 
-             type - vehicle type, 
-             km - vehicle actual km
-
-  - "transports", id (autoincrement),
-                  plate - vehicle lisence plate, 
-                  brand - vehicle brand, 
-                  type - vehicle type, 
-                  km - vehicle actual km
-                      
-
-Templates folder as 08 html file:
-  - base.html (this html file will be extended in all the other html files)
-  
       
 
 
 
 
-
-
-
-
-
-
-
+## Usage
+How does one go about using it?
+Provide various use cases and code examples here.
 
 
 
@@ -113,56 +97,39 @@ Templates folder as 08 html file:
 <!-- If you have screenshots you'd like to share, include them here. -->
 
 
-## Setup
-In requirements.txt: 
->python3;
-datetime;
-calendar;
-Flask;
-Flask-Session;
-requests;
-sqlite3;
-bootstrap;
-chartjs;
-chartjs-plugin-datalabels
-
-
-## Usage
-How does one go about using it?
-Provide various use cases and code examples here.
-
-`write-your-code-here`
-
-
 ## Project Status
-Project is: _in progress_ / _complete_ / _no longer being worked on_. If you are no longer working on it, provide reasons why.
-
-
+- _complete_ / for CS50 final projetct submission 🎆
+- _in progress_ with the aim to achieve the same as excel on daily work 
+  
 ## Room for Improvement
-Include areas you believe need improvement / could be improved. Also add TODOs for future development.
+### Room for improvement:
+- Create different sessions for driver and management , with different accessibilities
+- Give oportunity to users to change their preferences
+- Possibility to input older trips (for now needs to be continuous)
+- Export data from history inputs
+- Create automatic reports based on the dashboard and consumption
+- Create mantainemence page to update vehicles operacional viability
+- Create QRCodes to all vehicles to aply new trip
+- Management side -> inser new vehicles and correct trips from users (without going to database directly)
+- Mobile phone suport (drives specially)
+- Etc...
 
-Room for improvement:
-- Improvement to be done 1
-- Improvement to be done 2
-
-To do:
-- Feature to be added 1
-- Feature to be added 2
+### To do:
+- [X] Enjoy the process 😁
+- [ ] Submit CS50 final project (🙏 hope I can manage this with this WebApp 😰)
+- [ ] Do all the improvements above 💪
 
 
 ## Acknowledgements
-Give credit here.
-- This project was inspired by...
-- This project was based on [this tutorial](https://www.example.com).
-- Many thanks to...
+- This project was inspired by daily work, doing this in excel
+- This project was based on CS50 Finance
+- This README was base on https://github.com/iharsh234/WebApp
+- Many thanks to [CS50](https://pll.harvard.edu/course/cs50-introduction-computer-science?delta=0) team
+- Special thanks to my lovely girlfriend for all the support in the way ❤️
 
 
 ## Contact
-Created by [@flynerdpl](https://www.flynerd.pl/) - feel free to contact me!
+Created by 🪖José Pinto, 
+           @Lisbon, Portugal 🇵🇹
+           andre_pinto_10@hotmail.com - feel free to contact me!
 
-https://github.com/iharsh234/WebApp --- i came to drink here
-<!-- Optional -->
-<!-- ## License -->
-<!-- This project is open source and available under the [... License](). -->
-
-<!-- You don't have to include all sections - just the one's relevant to your project -->
