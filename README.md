@@ -93,9 +93,34 @@ Provide various use cases and code examples here.
 
 
 ## Screenshots
-![Example screenshot](./img/screenshot.png)
-<!-- If you have screenshots you'd like to share, include them here. -->
-
+  #### Login
+  ![Login template](/readme_img/login.png)
+  #### Register
+  ![Login template](/readme_img/register.png)
+  #### Index - New User
+  ![Login template](/readme_img/indexone.png)
+  #### Index - Form and table
+  ![Login template](/readme_img/indextwo.png)
+  #### Index - Charts
+  ![Login template](/readme_img/indexthree.png)
+  #### Dashboard - First part
+  ![Login template](/readme_img/dashboardone.png)
+  #### Dashboard - Second part
+  ![Login template](/readme_img/dashboardtwo.png)
+  #### Consumption - First part
+  ![Login template](/readme_img/consumptionone.png)
+  #### Consumption - Second part
+  ![Login template](/readme_img/consumptiontwo.png)  
+  #### Consumption - Third part
+  ![Login template](/readme_img/consumptionthree.png)
+  #### Fleet - First part
+  ![Login template](/readme_img/fleetone.png)  
+  #### Fleet - Second part
+  ![Login template](/readme_img/fleettwo.png)
+  #### History
+  ![Login template](/readme_img/history.png)
+  #### Logout
+  ![Login template](/readme_img/logout.png)
 
 ## Project Status
 - _complete_ / for CS50 final projetct submission 🎆
