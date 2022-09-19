@@ -85,8 +85,10 @@ In requirements.txt:
 * [Login](#login-page)
 * [Register](#register-page)
 * [Index](#index-page)
-* [Setup](#setup)
-* [Database](#database)  
+* [Dashboard](#dashboard-page)
+* [Consumption](#consumption-page)  
+* [Fleet](#fleet-page)  
+* [History](#history-page)  
 
 ### Login page
 Decorated is made for login
@@ -305,6 +307,116 @@ In the index function is to defined the tables and grapsh that are shown after i
               }
 ```
 
+  
+### Dashboard page
+Dashboard page gives the user a monthly summary of all fleet vehicles in terms of: number of transports, distance done and fuel input. It shows to the year total for all those itens.
+1. Totals data
+```python
+    # Totals data
+    transports = db.execute('SELECT MAX(id) as id , SUM(kms) as kms , SUM(gas) as gas FROM transports').fetchall()
+    numb_tp = transports[0]['id']
+    numb_kms = transports[0]['kms']
+    numb_gas = transports[0]['gas']
+```
+2. Months data
+```python
+    # Monthly data
+    graph_data = cursor.execute("SELECT month, SUM(kms), SUM(gas), SUM(month) FROM transports GROUP BY month").fetchall()
+
+    datas = [row[0] for row in graph_data]
+    distances = [row[1] for row in graph_data]
+    gas = [row[2] for row in graph_data]
+    totals = [row[3] for row in graph_data]
+    
+    months = [str_to_month(data) for data in datas]
+```
+3. Render template
+```python
+    return render_template('dashboard.html', distances=distances, months=months, fuel=gas, totals=totals,
+                    numb_tp=numb_tp, numb_kms=numb_kms, numb_gas=numb_gas)
+```
+
+  
+### Consumption page
+Consumption page has two phase:
+  1. First time clicking - shows year totals (code below will show year totals)
+  2. After aplying the filte it will show the values for the month chosen
+- Filter option for months - first time going to the page it shows the years totals
+  ```python
+      # Entry values to the form
+    months = cursor.execute("SELECT month FROM transports GROUP BY month").fetchall()
+    months_dt = [data[0] for data in months]
+    months = [str_to_month(data) for data in months_dt]
+  ```
+- Table with all vehicles used and total distance and total fuel for each one
+  ```python
+      # Table with full year stats
+    table_data = cursor.execute('SELECT plate, SUM(kms) as kms, SUM(gas) as gas FROM transports GROUP BY plate').fetchall()
+  ```
+  Only difference after filter
+  ```python
+      if request.method == 'POST':
+        # Get month name and convert to str with 2digit
+        month_name = request.form.get("month")
+        month_number = datetime.strptime(month_name, '%B').month
+        month_tdig = '{:02d}'.format(month_number)
+        
+        # Same table with filter option
+        table_data = cursor.execute('SELECT plate, SUM(kms) as kms, SUM(gas) as gas FROM transports WHERE month=? GROUP BY plate', (month_tdig,)).fetchall()
+  ```
+  Same variables
+  ```python
+    plates_name = [row[0] for row in table_data]
+    plates_kms = [int(row[1]) for row in table_data]
+    plates_gas = [int(row[2]) for row in table_data]
+  ```
+- Bar graph with consumption (Lt/100km) by vehicle where variables are defined
+  ```python
+    # Populates vehicles consumption
+    plates_consumption = []
+    for i in range(len(plates_name)):
+        result =  "{:.1f}".format(int(plates_gas[i]) * 100 / int(plates_kms[i]))
+        plates_consumption.append(float(result))
+  ```
+  
+### Fleet page
+Fleet function as 3 main parts:
+  1. Fleet table
+  ```python
+      fleets = cursor.execute('SELECT * FROM fleet').fetchall()
+  ``` 
+  2. Variable definition to Type graph
+  ```python
+    types = cursor.execute('SELECT type, COUNT(type), SUM(km) FROM fleet GROUP by type').fetchall()
+    type_name = [row[0] for row in types]
+    type_count = [row[1] for row in types]
+  ```
+  3. Variable definition to Brand graph
+  ```python
+    brands = cursor.execute('SELECT brand, COUNT(brand), SUM(km) FROM fleet GROUP by brand').fetchall()
+    brand_name = [row[0] for row in brands]
+    brand_count = [row[1] for row in brands]
+  ```
+  
+  
+  
+### History page
+Simply shows all inputs
+  ```python
+      transports = db.execute('SELECT * FROM transports').fetchall()
+  ```
+  
+  
+### Logout page
+Clears the session and renders the template
+  ```python
+  @app.route('/logout')
+  def logout():
+    session.clear()
+    return render_template("/logout.html")
+  ```
+  
+  
 ## Screenshots
   #### Login
   ![Login template](/readme_img/login.png)
