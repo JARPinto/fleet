@@ -197,7 +197,8 @@ In case the form is well submited it will:
 
 ### Index page
 * [Form part](#form-part)
-* [Tables and Graphs](#tables-and-graphs
+* [Tables and Graphs](#tables-and-graphs)
+
 After login or register the user is redirected to index page, where it is possible to do:
 - Submit a new movement
 - See the user's last transports
