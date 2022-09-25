@@ -1,9 +1,8 @@
 # FleetManagment
 #### Video Demo: https://youtu.be/R4D7uWOMHNU
 #### Description:
-This project intend to solve the problem of fleet management, taking a hipotetic case of an Armed Force vehicle fleet. I took this project because it solves some daily life problems I face all day, being a fleet manager myself.
-The purpose for this project is for both driver and fleet manager acess the statics of the different trips.
-The driver can register a trip, acess his last trips and charts with summary of his activity. The fleet manage can see the Dashboard and the state of all vehicles within the different logs.
+This project intends to solve a fleet management problem, taking a hypothetical case of an Armed Force vehicle fleet. I took this project because it solves some daily life problems I face every day, being a fleet manager myself.
+The purpose for this project is for both the driver and the fleet manager to access the statistics of the different trips. The driver can register a trip, access his last trips and charts with summary of his activity. The fleet manager can see the Dashboard and the state of all vehicles within the different logs.
 
 
 ## Table of Contents
@@ -51,14 +50,14 @@ In requirements.txt:
   - rank saves the user rank
 - fleet
   - id (autoincrement)
-  - plate, vehicle lisence plate
+  - plate, vehicle lisense plate
   - brand, vehicle brand
   - type, vehicle type
   - km, vehicle actual km
 - transports
   - id (autoincrement)
   - user_id, unique value from session
-  - plate, vehicle lisence plate
+  - plate, vehicle lisense plate
   - km, distance done in the trip
   - gas, fuel added after trip
   - name | bim | rank, user data
@@ -69,7 +68,7 @@ In requirements.txt:
 ## Features
 - Log in
 - Register
-- New transport Form
+- New Transport Form
 - Last transports information
 - User tranports activity in graph
 - Dashboard with monthly fleet activity
@@ -112,7 +111,7 @@ Then if Form submited, it checks if all form was completed
         elif not pwd:
             flash('Password is required!')
 ```
-If this conditions are checked, it gets all info from soldier tables, and ensures that BIM and password are correct. In positive case it remembers the session["user_id"] as the bim loggin in and returns / (aka /index)
+If these conditions are checked, it gets all info from soldier tables, and ensures that BIM and password are correct. In positive case it remembers the session["user_id"] as the bim loggin and returns / (aka /index)
 ```python
     else:
             # Query database for BIM
@@ -133,7 +132,7 @@ If this conditions are checked, it gets all info from soldier tables, and ensure
                 session["user_id"] = rows[0]["id"]
                 return redirect("/")      
 ``` 
-If no Form will returns always the login html
+If no Form will always return the login html
 ```python
   # GET
     return render_template("login.html")
@@ -176,7 +175,7 @@ In case the form is well submited it will:
             # Hash password and save to db.
             pwd_hash = generate_password_hash(pwd, method='pbkdf2:sha256', salt_length=8)
   ```
-  2. Connect to db and try insert into the soldiers table the new register. It will save session as bim. Note that not all code is displayed
+  2. Connect to db and try to insert into the soldiers table the new register. It will save session as bim. Note that not all code is displayed
   ```python
             cursor.execute("SELECT * FROM soldiers WHERE bim = ?", (bim,))
             rows = cursor.fetchall()            
@@ -201,13 +200,13 @@ In case the form is well submited it will:
 * [Tables and Graphs](#tables-and-graphs
 After login or register the user is redirected to index page, where it is possible to do:
 - Submit a new movement
-- See the user last transports
+- See the user's last transports
 - Read charts with monthly info
 - Read chart with most used vehicles
 
 #### Form part
-The code for index funtion starts with the definition of plates - a variable taken in the html form to select one of the different plates available.
-When the form is submited it saves and checks the variables. In the midtime it saves the actual km of the vehicle it chosen before to see ensure km are the corrected.
+The code for index function starts with the definition of plates - a variable taken in the html form to select one of the different plates available.
+When the form is submitted, it saves and checks the variables. In the meantime it saves the actual km of the vehicle chosen before to ensure the km are the corrected.
 ```python
   @app.route('/', methods=["POST", "GET"])
 @login_required
@@ -251,7 +250,7 @@ def index():
             month = datetime.strptime(datestring, '%Y-%m-%d').month
             month = '%02d' % month
   ```
- If everythings checks it will insert into the transports table the new movement and update the actual km of the vehicles used to the final km. (Note: not all code displayed)
+If everything is checked, the new movement will be inserted into the transports table and the actual km of the vehicles used will be updated to the final km. (Note: not all code displayed)
 ```python
                 cursor.execute('INSERT INTO transports (user_id, date, month, plate, kms, gas, name, bim, rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
                                 (user_id, datestring, month, plate, km_tot, gas, name, user[0]["bim"], user[0]["rank"], ))
@@ -267,7 +266,7 @@ In the index function is to defined the tables and grapsh that are shown after i
     # Table definition
     transports = db.execute('SELECT * FROM transports WHERE user_id = ? ORDER BY date DESC', (user_id, )).fetchmany(size=7)  
 ```
-2. Montly graphs
+2. Monthly graphs
 ```python
     # Graph definition
     # Monthly data by user
@@ -309,7 +308,7 @@ In the index function is to defined the tables and grapsh that are shown after i
 
   
 ### Dashboard page
-Dashboard page gives the user a monthly summary of all fleet vehicles in terms of: number of transports, distance done and fuel input. It shows to the year total for all those itens.
+Dashboard page gives the user a monthly summary of all fleet vehicles in terms of: number of transports, distance done and fuel input and it shows the yearly total for all those items.
 1. Totals data
 ```python
     # Totals data
@@ -338,9 +337,9 @@ Dashboard page gives the user a monthly summary of all fleet vehicles in terms o
 
   
 ### Consumption page
-Consumption page has two phase:
+Consumption page has two phases:
   1. First time clicking - shows year totals (code below will show year totals)
-  2. After aplying the filte it will show the values for the month chosen
+  2. After applying the filter it will show the values for the month chosen
 - Filter option for months - first time going to the page it shows the years totals
   ```python
       # Entry values to the form
@@ -380,7 +379,7 @@ Consumption page has two phase:
   ```
   
 ### Fleet page
-Fleet function as 3 main parts:
+Fleet function has three main parts:
   1. Fleet table
   ```python
       fleets = cursor.execute('SELECT * FROM fleet').fetchall()
@@ -453,15 +452,15 @@ Clears the session and renders the template
   
 ## Room for Improvement
 ### Room for improvement:
-- Create different sessions for driver and management , with different accessibilities
-- Give oportunity to users to change their preferences
-- Possibility to input older trips (for now needs to be continuous)
+- Create different sessions for driver and manager, with different accessibilities
+- Give opportunity for users to change their preferences
+- Possibility to input older trips (for now it needs to be continuous)
 - Export data from history inputs
 - Create automatic reports based on the dashboard and consumption
 - Create mantainemence page to update vehicles operacional viability
-- Create QRCodes to all vehicles to aply new trip
-- Management side -> inser new vehicles and correct trips from users (without going to database directly)
-- Mobile phone suport (drives specially)
+- Create QRCodes to all vehicles to apply new trip
+- Management side -> insert new vehicles and correct trips from users (without going to database directly)
+- Mobile phone support (specially drivers)
 - Etc...
 
 ### To do:
@@ -473,7 +472,7 @@ Clears the session and renders the template
 ## Acknowledgements
 - This project was inspired by daily work, doing this in excel
 - This project was based on CS50 Finance
-- This README was base on https://github.com/iharsh234/WebApp
+- This README was based on https://github.com/iharsh234/WebApp
 - Many thanks to [CS50](https://pll.harvard.edu/course/cs50-introduction-computer-science?delta=0) team
 - Special thanks to my lovely girlfriend for all the support in the way ❤️
 
